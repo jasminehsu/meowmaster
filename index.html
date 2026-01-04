@@ -771,9 +771,9 @@ function completeOnboarding(){
 }
 
 const CAT_THEMES = {
-  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/classic/wise.svg", rest:"/icons/rest.svg" } },
+  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/wise.svg", rest:"/icons/rest.svg" } },
   night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/wise.svg", rest:"/icons/rest.svg" } },
-  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/wise.svg", rest:"/icons/rest.svg" } }
+  candy:   { la{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/wise.svg", rest:"/icons/rest.svg" } }bel:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:
 };
 const [catTheme, setCatTheme] = useState(()=>{ try { return localStorage.getItem("meow_cat_theme") || "classic"; } catch(e){ return "classic"; }});
 const [showTheme, setShowTheme] = useState(false);
