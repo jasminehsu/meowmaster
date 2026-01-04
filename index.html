@@ -380,7 +380,12 @@
       animation: breathe 14s ease-in-out infinite;
     }
     @keyframes breathe{
-      0%   { transform: scale(.85); }
+  /* 4–4–6 (14s) */
+  0%   { transform: scale(.85); }
+  28.57% { transform: scale(1); }   /* inhale */
+  57.14% { transform: scale(1); }   /* hold */
+  100% { transform: scale(.85); }   /* exhale back */
+}
       30%  { transform: scale(1); }   /* inhale 4s */
       60%  { transform: scale(1); }   /* hold 4s */
       100% { transform: scale(.85); } /* exhale 6s */
@@ -388,6 +393,15 @@
     .breath-actions{
       display:flex; gap:10px; justify-content:center;
     }
+
+
+.onboard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(3px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
+.onboard-card{width:min(420px,92vw);background:rgba(255,255,255,.94);border:1px solid rgba(120,113,108,.18);border-radius:22px;box-shadow:0 18px 44px rgba(0,0,0,.22);padding:22px;text-align:center;}
+.onboard-title{font-size:16px;letter-spacing:.18em;font-weight:800;color:#222;margin-bottom:10px;}
+.onboard-copy{font-size:13px;color:#666;line-height:1.7;margin-bottom:14px;}
+.onboard-steps{text-align:left;background:rgba(242,240,235,.7);border:1px solid rgba(120,113,108,.12);border-radius:16px;padding:12px;margin:14px 0 16px;font-size:13px;color:#333;line-height:1.7;}
+.onboard-step{display:flex;gap:10px;padding:6px 4px;}
+.onboard-num{width:18px;font-weight:900;color:#555;}
 
 </style>
 </head>
@@ -748,10 +762,18 @@ function parseCSV(text){
       const [showMore, setShowMore] = useState(false);
       const [showBreath, setShowBreath] = useState(false);
 
+const [showOnboarding, setShowOnboarding] = useState(()=>{
+  try { return !localStorage.getItem("meow_onboarding_done"); } catch(e){ return true; }
+});
+function completeOnboarding(){
+  try { localStorage.setItem("meow_onboarding_done","1"); } catch(e){}
+  setShowOnboarding(false);
+}
+
 const CAT_THEMES = {
-  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"./icons/gentle.svg", focus:"./icons/focus.svg", wise:"./icons/wise.svg", rest:"./icons/sleep.svg" } },
-  night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"./icons/gentle.svg", focus:"./icons/focus.svg", wise:"./icons/wise.svg", rest:"./icons/sleep.svg" } },
-  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"./icons/gentle.svg", focus:"./icons/focus.svg", wise:"./icons/wise.svg", rest:"./icons/sleep.svg" } }
+  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"/icons/classic/gentle.svg", focus:"/icons/classic/focus.svg", wise:"/icons/classic/wise.svg", rest:"/icons/classic/rest.svg" } },
+  night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"/icons/night/gentle.svg", focus:"/icons/night/focus.svg", wise:"/icons/night/wise.svg", rest:"/icons/night/rest.svg" } },
+  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"/icons/candy/gentle.svg", focus:"/icons/candy/focus.svg", wise:"/icons/candy/wise.svg", rest:"/icons/candy/rest.svg" } }
 };
 const [catTheme, setCatTheme] = useState(()=>{ try { return localStorage.getItem("meow_cat_theme") || "classic"; } catch(e){ return "classic"; }});
 const [showTheme, setShowTheme] = useState(false);
@@ -1220,6 +1242,23 @@ const [fishCount, setFishCount] = useState(()=>{
       }
 
       return e("div", null,
+        showOnboarding ? e("div",{className:"onboard-overlay", onClick:completeOnboarding},
+          e("div",{className:"onboard-card", onClick:(ev)=>ev.stopPropagation()},
+            e("div",{className:"onboard-title"}, (currentLang==="en"?"MEOW~ MOMENT":(currentLang==="zh-CN"?"喵～时刻":"喵～時刻"))),
+            e("div",{className:"onboard-copy"}, currentLang==="en"
+              ? "This isn’t a quotes app. It’s a 3-minute reset, guided by cats."
+              : (currentLang==="zh-CN"
+                ? "这不是名言 App，而是 3 分钟的心理 reset。"
+                : "這不是名言 App，而是 3 分鐘的心理 reset。")),
+            e("div",{className:"onboard-steps"},
+              e("div",{className:"onboard-step"}, e("div",{className:"onboard-num"},"①"), e("div",null, currentLang==="en"?"Pick your current mood":"選擇你現在的狀態")),
+              e("div",{className:"onboard-step"}, e("div",{className:"onboard-num"},"②"), e("div",null, currentLang==="en"?"Read one line":"讀一句貓語")),
+              e("div",{className:"onboard-step"}, e("div",{className:"onboard-num"},"③"), e("div",null, currentLang==="en"?"Pick a cat and receive a prescription":"選一隻貓領處方"))
+            ),
+            e("button",{onClick:completeOnboarding}, currentLang==="en"?"Let the cat lead 🐾":(currentLang==="zh-CN"?"好，让猫带路 🐾":"好，讓貓帶路 🐾"))
+          )
+        ) : null,
+
         e(Header, null),
         e(FavoritesDrawer, null),
         e("div",{className:"wrap"},
@@ -1272,7 +1311,7 @@ const [fishCount, setFishCount] = useState(()=>{
               e("div",{className:"rx-body"},
                 quote && quote.action ? getText(quote.action) : t("rxMissing")
               ),
-              (quote && ((quote.music_type && quote.music_type !== "") || (quote.music_hint && getText(quote.music_hint)) || (quote.music_url && quote.music_url !== ""))) ? e("div",{style:{marginTop:"14px"}},
+              (true && ((quote.music_type && quote.music_type !== "") || (quote.music_hint && getText(quote.music_hint)) || (quote.music_url && quote.music_url !== ""))) ? e("div",{style:{marginTop:"14px"}},
   e("div",{style:{textAlign:"center", fontSize:"12px", color:"#7d7d7d", letterSpacing:".14em"}},
     "🎧 ",
     (currentLang==="en" ? "Music suggestion" : (currentLang==="zh-CN" ? "猫的音乐建议" : "貓的音樂建議"))
