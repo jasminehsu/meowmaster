@@ -771,9 +771,9 @@ function completeOnboarding(){
 }
 
 const CAT_THEMES = {
-  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"/icons/classic/gentle.svg", focus:"/icons/classic/focus.svg", wise:"/icons/classic/wise.svg", rest:"/icons/classic/rest.svg" } },
-  night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"/icons/night/gentle.svg", focus:"/icons/night/focus.svg", wise:"/icons/night/wise.svg", rest:"/icons/night/rest.svg" } },
-  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"/icons/candy/gentle.svg", focus:"/icons/candy/focus.svg", wise:"/icons/candy/wise.svg", rest:"/icons/candy/rest.svg" } }
+  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/classic/wise.svg", rest:"/icons/rest.svg" } },
+  night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/wise.svg", rest:"/icons/rest.svg" } },
+  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"/icons/gentle.svg", focus:"/icons/focus.svg", wise:"/icons/wise.svg", rest:"/icons/rest.svg" } }
 };
 const [catTheme, setCatTheme] = useState(()=>{ try { return localStorage.getItem("meow_cat_theme") || "classic"; } catch(e){ return "classic"; }});
 const [showTheme, setShowTheme] = useState(false);
