@@ -1,0 +1,1332 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>喵～時刻 Meow~ Moment · Phase G (No Babel)</title>
+  <meta name="theme-color" content="#F2F0EB" />
+  <style>
+    body { margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif; background:#F2F0EB; color:#222; }
+    .wrap { max-width:620px; margin:0 auto; padding:0 16px 28px; }
+    .top-space { height: 18px; }
+
+    /* Header */
+    .header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(12px);
+      background: rgba(242,240,235,.55);
+      border-bottom: 1px solid rgba(120,113,108,.10);
+      transition: background .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .header.scrolled{
+      background: rgba(242,240,235,.78);
+      border-bottom-color: rgba(120,113,108,.14);
+      box-shadow: 0 10px 26px rgba(0,0,0,.08);
+    }
+    .header-inner {
+      max-width: 620px; margin: 0 auto;
+      padding: 16px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand { display:flex; align-items:center; gap:10px; cursor: default; }
+    .brand .logo { display:flex; align-items:center; }
+
+    .logo svg { width:48px; height:48px; opacity:.9; } /* mobile */
+@media (min-width: 768px){
+  .logo svg { width:32px; height:32px; } /* desktop */
+}
+
+    .brand .title { font-size: 12px; letter-spacing:.22em; font-weight:700; color:#2d2d2d; }
+    .brand .sub { font-size: 10px; color:#8a8a8a; letter-spacing:.14em; margin-top:2px; }
+
+    .h-actions { display:flex; align-items:center; gap:10px; }
+    .icon-btn {
+  width:72px; height:72px; /* mobile */
+  border-radius:999px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(120,113,108,.18);
+  background: rgba(255,255,255,.55);
+  cursor:pointer;
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+  user-select:none;
+}
+@media (min-width: 768px){
+  .icon-btn { width:56px; height:56px; } /* desktop */
+}
+    .icon-btn:hover { background:#fff; border-color: rgba(120,113,108,.28); transform: translateY(-1px); }
+    .icon { opacity:.85; }
+    .icon-btn svg { width:48px; height:48px; } /* mobile: ~3x */
+@media (min-width: 768px){
+  .icon-btn svg { width:36px; height:36px; } /* desktop: ~2x */
+}
+    .badge svg { width:40px; height:40px; } /* mobile */
+@media (min-width: 768px){
+  .badge svg { width:28px; height:28px; } /* desktop */
+}
+
+    .badge {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:10px 14px; /* mobile */
+  border-radius:999px;
+  background: rgba(255,255,255,.55);
+  border:1px solid rgba(120,113,108,.18);
+  font-size:14px;
+  color:#6f6f6f;
+  user-select:none;
+}
+@media (min-width: 768px){
+  .badge { padding:6px 10px; font-size:12px; } /* desktop */
+}
+    .badge .fish { font-size:14px; opacity:.85; }
+    .badge .count { font-weight:700; color:#444; min-width: 18px; text-align:center; }
+
+    /* Card */
+    .card {
+      background:rgba(255,255,255,.92);
+      border-radius:28px;
+      padding:28px;
+      box-shadow:0 18px 40px rgba(0,0,0,.12);
+      border:1px solid rgba(255,255,255,.6);
+      backdrop-filter: blur(10px);
+      margin-top: 18px;
+    }
+
+    h2 { margin:0 0 8px 0; font-weight:700; letter-spacing:.02em; }
+    .muted { color:#7a7a7a; font-size:14px; line-height:1.6; }
+
+    /* Status pills */
+    .states { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+    .state {
+      display:flex; align-items:center; gap:10px;
+      padding:12px 18px; border-radius:999px;
+      background:rgba(255,255,255,.6);
+      border:1px solid #e5e2dc;
+      cursor:pointer; font-size:14px;
+      transition:background .2s, box-shadow .2s, transform .2s, border-color .2s;
+      user-select:none;
+    }
+    .state:hover { background:#fff; box-shadow:0 10px 22px rgba(0,0,0,.08); transform: translateY(-1px); border-color:#e0ddd6; }
+    .state.active {
+      background:#222; color:#fff; border-color:#222;
+      box-shadow:0 14px 28px rgba(0,0,0,.18);
+      transform: translateY(-1px);
+    }
+    .state .icon { opacity:.85; }
+
+    /* Quote */
+    .quote {
+      font-size:26px; line-height:1.55; margin:18px 0 10px 0;
+      letter-spacing:.02em;
+      text-align:center;
+    }
+    .author { font-size:12px; color:#888; letter-spacing:.18em; text-transform:uppercase; text-align:center; }
+
+    /* Cat selector */
+    .cats { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:18px; }
+    .cat {
+      position:relative;
+      border-radius:22px;
+      background:rgba(255,255,255,.85);
+      border:1px solid #e5e2dc;
+      padding:16px 12px 14px;
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .cat:hover {
+      transform: translateY(-2px) rotate(-0.4deg);
+      box-shadow:0 14px 28px rgba(0,0,0,.10);
+      border-color:#dedad3;
+    }
+    .cat svg { width:72px; height:72px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.10)); }
+    .cat-name { margin-top:10px; font-size:13px; color:#5a5a5a; letter-spacing:.06em; }
+
+    @keyframes stamp-pop {
+      0% { transform: scale(1.8) rotate(-12deg); opacity: 0; }
+      70% { transform: scale(0.95) rotate(-12deg); opacity: 1; }
+      100% { transform: scale(1) rotate(-12deg); opacity: 1; }
+    }
+    .stamp {
+      position:absolute;
+      top:10px; right:10px;
+      color:#c8c2b8;
+      opacity:.95;
+      transform: rotate(-12deg);
+      animation: stamp-pop .35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      pointer-events:none;
+      font-size:18px;
+    }
+
+    /* Prescription paper */
+    .rx {
+      margin-top:18px;
+      background:#FFFDF7;
+      border:1px solid #e2dccc;
+      border-radius:22px;
+      padding:22px;
+      position:relative;
+      overflow:hidden;
+    }
+    .rx::after {
+      content:"";
+      position:absolute; inset:0;
+      background-image:radial-gradient(circle at 1px 1px, rgba(120,113,108,.12) 1px, transparent 0);
+      background-size:10px 10px;
+      opacity:.35;
+      pointer-events:none;
+    }
+    .rx-head {
+      display:flex; justify-content:space-between;
+      font-size:11px; color:#7d7d7d;
+      letter-spacing:.14em;
+      position:relative; z-index:1;
+    }
+    .rx-body {
+      margin-top:14px;
+      font-size:16px;
+      text-align:center;
+      line-height:1.8;
+      color:#4b4b4b;
+      position:relative; z-index:1;
+    }
+    .rx-foot {
+      margin-top:16px;
+      text-align:center;
+      font-size:10px;
+      color:#b6b0a6;
+      letter-spacing:.22em;
+      position:relative; z-index:1;
+      text-transform:uppercase;
+    }
+
+    .actions { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; justify-content:center; }
+    button { border:none; border-radius:999px; padding:10px 16px; cursor:pointer; background:#222; color:#fff; font-size:14px; }
+    button.secondary { background:#efefef; color:#222; }
+
+    /* Favorites drawer */
+    .overlay {
+      position:fixed; inset:0; background: rgba(0,0,0,.22);
+      backdrop-filter: blur(2px);
+      z-index: 80;
+      display:flex; justify-content:flex-end;
+    }
+    .drawer {
+      width: min(360px, 92vw);
+      height: 100%;
+      background:#F2F0EB;
+      border-left: 1px solid rgba(120,113,108,.18);
+      box-shadow: -18px 0 40px rgba(0,0,0,.18);
+      padding: 18px;
+      overflow:auto;
+    }
+    .drawer h3 { margin: 6px 0 14px; font-size:14px; letter-spacing:.18em; color:#2d2d2d; }
+    .fav-item { background: rgba(255,255,255,.72); border:1px solid rgba(120,113,108,.14); border-radius:16px; padding:14px; margin-bottom:12px; }
+    .fav-main { font-size:14px; line-height:1.6; color:#333; }
+    .fav-meta { margin-top:8px; font-size:10px; letter-spacing:.18em; color:#888; text-transform:uppercase; display:flex; justify-content:space-between; gap:8px; }
+    .fav-actions { margin-top:10px; display:flex; justify-content:flex-end; gap:10px; }
+    .link-btn { background:transparent; border:none; cursor:pointer; color:#666; font-size:12px; text-decoration: underline; text-underline-offset: 4px; }
+    .toast {
+      position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+      background: rgba(30,30,30,.92); color:#fff;
+      padding: 10px 14px; border-radius: 999px;
+      font-size: 12px; letter-spacing:.14em;
+      z-index: 120;
+      opacity: 0; transition: opacity .2s ease, transform .2s ease;
+      pointer-events:none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+  
+    .lang-menu {
+      position:absolute;
+      top: 86px;
+      right: 16px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(120,113,108,.18);
+      border-radius: 14px;
+      box-shadow: 0 16px 34px rgba(0,0,0,.14);
+      padding: 8px;
+      z-index: 120;
+      min-width: 140px;
+    }
+    .lang-item{
+      padding:10px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size: 12px;
+      color:#333;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      user-select:none;
+    }
+    .lang-item:hover{ background: rgba(120,113,108,.08); }
+    .lang-item.active{ background: rgba(34,34,34,.08); font-weight:700; }
+
+
+    /* Mobile optimizations */
+    @media (max-width: 420px){
+      .header-inner { padding: 12px 12px; gap: 8px; }
+      .brand { gap: 8px; }
+      .brand .title { font-size: 11px; }
+      .brand .sub { font-size: 9px; }
+      .badge { padding: 6px 8px; font-size: 11px; gap: 8px; }
+      .h-actions { gap: 8px; }
+      .card { padding: 18px; border-radius: 22px; }
+      h2 { font-size: 18px; }
+      .muted { font-size: 13px; }
+      .quote { font-size: 20px; margin: 14px 0 8px 0; }
+      .author { font-size: 11px; }
+      .states { gap: 10px; }
+      .state { padding: 10px 14px; font-size: 13px; gap: 8px; }
+      .cats { grid-template-columns: 1fr; gap: 12px; }
+      .cat svg { width: 64px; height: 64px; }
+      .rx { padding: 18px; }
+      .actions { gap: 8px; }
+      button { padding: 10px 14px; font-size: 14px; }
+      .drawer { width: 92vw; }
+      .lang-menu { right: 12px; top: 76px; }
+    }
+
+    @media (max-width: 360px){
+      .icon-btn { width: 22px; height: 22px; }
+      .header .icon-btn svg { width: 6px; height: 6px; }
+      .badge svg { width: 10px; height: 10px; }
+      .logo svg { width: 20px; height: 20px; }
+    }
+
+
+    /* Mobile: collapse header icons into More (...) */
+    .more-wrap { position: relative; }
+    .more-menu {
+      position:absolute;
+      top: 54px;
+      right: 0;
+      background: rgba(255,255,255,.94);
+      border:1px solid rgba(120,113,108,.18);
+      border-radius: 14px;
+      box-shadow: 0 16px 34px rgba(0,0,0,.14);
+      padding: 8px;
+      z-index: 140;
+      min-width: 180px;
+    }
+    .more-item{
+      padding:10px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size: 12px;
+      color:#333;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      user-select:none;
+      gap: 10px;
+    }
+    .more-item:hover{ background: rgba(120,113,108,.08); }
+    .more-left{ display:flex; align-items:center; gap:10px; }
+    .more-left svg{ width:14px; height:14px; }
+    .more-right{ color:#888; font-size:11px; letter-spacing:.12em; }
+    @media (max-width: 420px){
+      .more-menu{ right: 0; top: 50px; }
+      .more-item{ padding: 10px; }
+    }
+
+
+    @media (max-width: 420px){
+      .desktop-icons{ display:none !important; }
+      .mobile-more{ display:flex !important; }
+    }
+    @media (min-width: 421px){
+      .desktop-icons{ display:flex !important; }
+      .mobile-more{ display:none !important; }
+    }
+
+
+    /* Breathing modal */
+    .breath-overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.25);
+      backdrop-filter: blur(2px);
+      z-index: 200;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .breath-modal{
+      background:#FFFDF7;
+      border-radius:24px;
+      padding:24px;
+      width:min(360px, 92vw);
+      text-align:center;
+      box-shadow:0 18px 40px rgba(0,0,0,.2);
+    }
+    .breath-title{
+      font-size:16px;
+      letter-spacing:.18em;
+      color:#333;
+      margin-bottom:8px;
+    }
+    .breath-sub{
+      font-size:13px;
+      color:#777;
+      margin-bottom:18px;
+    }
+    .breath-circle{
+      width:140px; height:140px;
+      margin:0 auto 18px;
+      border-radius:50%;
+      background: rgba(120,113,108,.15);
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; color:#444;
+      animation: breathe 14s ease-in-out infinite;
+    }
+    @keyframes breathe{
+      0%   { transform: scale(.85); }
+      30%  { transform: scale(1); }   /* inhale 4s */
+      60%  { transform: scale(1); }   /* hold 4s */
+      100% { transform: scale(.85); } /* exhale 6s */
+    }
+    .breath-actions{
+      display:flex; gap:10px; justify-content:center;
+    }
+
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+
+  <script>
+    const e = React.createElement;
+    const useState = React.useState;
+    const useEffect = React.useEffect;
+const useRef = React.useRef;
+
+    const GOOGLE_SHEET_CSV_URL = "";
+    const UI_TEXT = {
+      "zh-TW": {
+        appTitle: "喵～時刻",
+        appSubtitle: "給忙碌心靈的 3 分鐘貓語錄",
+        stateTitle: "現在的狀態…",
+        stateSubtitle: "先選擇你現在的狀態，貓會陪你走下一步。",
+        dataSource: "資料來源：",
+        dsSheet: "Google Sheet",
+        dsFallback: "內建備援",
+        todayQuote: "今日貓語",
+        pickCat: "選一隻貓，領取處方。",
+        masterRx: "貓大師生活秘方",
+        rxMissing: "（此則處方尚未設定行動建議）",
+        again: "再來一帖",
+        changeState: "換個狀態",
+        favorites: "收藏",
+        favEmpty: "尚未收藏任何靈感",
+        copied: "已複製 (含連結)",
+        copyFail: "複製失敗",
+        removed: "已移除收藏",
+        saved: "已收藏",
+        close: "關閉",
+        remove: "移除",
+        copy: "複製",
+        lang: "語言"
+      },
+      "zh-CN": {
+        appTitle: "喵～时刻",
+        appSubtitle: "给忙碌心灵的 3 分钟猫语录",
+        stateTitle: "现在的状态…",
+        stateSubtitle: "先选择你现在的状态，猫会陪你走下一步。",
+        dataSource: "数据来源：",
+        dsSheet: "Google Sheet",
+        dsFallback: "内建备援",
+        todayQuote: "今日猫语",
+        pickCat: "选一只猫，领取处方。",
+        masterRx: "猫大师生活秘方",
+        rxMissing: "（此则处方尚未设定行动建议）",
+        again: "再来一帖",
+        changeState: "换个状态",
+        favorites: "收藏",
+        favEmpty: "尚未收藏任何灵感",
+        copied: "已复制（含链接）",
+        copyFail: "复制失败",
+        removed: "已移除收藏",
+        saved: "已收藏",
+        close: "关闭",
+        remove: "移除",
+        copy: "复制",
+        lang: "语言"
+      },
+      "en": {
+        appTitle: "Meow~ Moment",
+        appSubtitle: "3-minute cat quotes for busy minds",
+        stateTitle: "Current mood…",
+        stateSubtitle: "Pick your mood. The cat will guide your next step.",
+        dataSource: "Source:",
+        dsSheet: "Google Sheet",
+        dsFallback: "Built-in fallback",
+        todayQuote: "Today’s Meow",
+        pickCat: "Pick a cat to receive your prescription.",
+        masterRx: "Cat Master Recipe",
+        rxMissing: "(No prescription action set yet)",
+        again: "One more",
+        changeState: "Change mood",
+        favorites: "Saved",
+        favEmpty: "No saved wisdom yet",
+        copied: "Copied (with footer)",
+        copyFail: "Copy failed",
+        removed: "Removed",
+        saved: "Saved",
+        close: "Close",
+        remove: "Remove",
+        copy: "Copy",
+        lang: "Language"
+      }
+    };
+ // Phase F: 先預留（之後貼上 export?format=csv）
+
+    const STATES = [
+      { id:"start",    label:{'zh-TW':"晨間準備",'zh-CN':"晨间准备",'en':"Morning"}, icon:"☕" },
+      { id:"conflict", label:{'zh-TW':"防禦奧客",'zh-CN':"防御客户",'en':"Defend"}, icon:"🛡️" },
+      { id:"win",      label:{'zh-TW':"達成成就",'zh-CN':"达成成就",'en':"Achieve"}, icon:"🏔️" },
+      { id:"tired",    label:{'zh-TW':"職業倦怠",'zh-CN':"职业倦怠",'en':"Burnout"}, icon:"☁️" },
+      { id:"push",     label:{'zh-TW':"專注衝刺",'zh-CN':"专注冲刺",'en':"Focus"}, icon:"⚡" }
+    ];
+
+    const FALLBACK_QUOTES = {
+      start: [{ main:{"zh-TW": "慢慢醒來，世界不會跑掉。", "zh-CN": "慢慢醒来，世界不会跑掉。", "en": "Wake slowly. The world won’t run away."}, action:{"zh-TW": "先喝水，再伸展一下你的爪子（手指）。", "zh-CN": "先喝水，再伸展一下你的爪子（手指）。", "en": "Drink water, then stretch your paws (fingers)."}, author:{"zh-TW": "賴床貓", "zh-CN": "赖床猫", "en": "Snooze Cat"} },
+        { main:{"zh-TW": "先吃早餐，再談統治世界。", "zh-CN": "先吃早餐，再谈统治世界。", "en": "Breakfast first. Then world domination."}, action:{"zh-TW": "吃點東西，讓大腦先上線。", "zh-CN": "吃点东西，让大脑先上线。", "en": "Eat something. Let your brain boot up."}, author:{"zh-TW": "空碗抗議者", "zh-CN": "空碗抗议者", "en": "Empty Bowl Protester"} },
+        { main:{"zh-TW": "伸懶腰要像原本有兩公尺長那樣。", "zh-CN": "伸懒腰要像原本有两公尺长那样。", "en": "Stretch like you’re two meters long."}, action:{"zh-TW": "抬手拉長脊椎 20 秒。", "zh-CN": "抬手拉长脊椎 20 秒。", "en": "Reach up and lengthen your spine for 20 seconds."}, author:{"zh-TW": "瑜珈虎斑", "zh-CN": "瑜珈虎斑", "en": "Yoga Tabby"} },
+        { main:{"zh-TW": "陽光是免費行動電源，不用白不用。", "zh-CN": "阳光是免费行动电源，不用白不用。", "en": "Sunlight is free energy—use it."}, action:{"zh-TW": "找一束光，臉湊過去曬 30 秒。", "zh-CN": "找一束光，脸凑过去晒 30 秒。", "en": "Find a sunbeam. Put your face in it for 30 seconds."}, author:{"zh-TW": "窗邊光合作用者", "zh-CN": "窗边光合作用者", "en": "Photosynthesizer"} },
+        { main:{"zh-TW": "整理儀容不是為了別人，是為了戰鬥力。", "zh-CN": "整理仪容不是为了别人，是为了战斗力。", "en": "Grooming isn’t for others. It’s for power."}, action:{"zh-TW": "洗把臉，讓精神回來。", "zh-CN": "洗把脸，让精神回来。", "en": "Wash your face. Get your edge back."}, author:{"zh-TW": "潔癖三花", "zh-CN": "洁癖三花", "en": "Clean Calico"} },
+        { main:{"zh-TW": "喝水。你不是仙人掌。", "zh-CN": "喝水。你不是仙人掌。", "en": "Hydrate. You’re not a cactus."}, action:{"zh-TW": "立刻喝一大杯水。", "zh-CN": "立刻喝一大杯水。", "en": "Drink a big glass of water now."}, author:{"zh-TW": "盆栽破壞者", "zh-CN": "盆栽破坏者", "en": "Plant Destroyer"} },
+        { main:{"zh-TW": "鬧鐘只是建議，不是命令。", "zh-CN": "闹钟只是建议，不是命令。", "en": "The alarm is a suggestion, not an order."}, action:{"zh-TW": "允許自己多賴床 5 分鐘。", "zh-CN": "允许自己多赖床 5 分钟。", "en": "Allow one extra 5-minute snooze."}, author:{"zh-TW": "按掉鬧鐘的手", "zh-CN": "按掉闹钟的手", "en": "Snooze Button Paw"} },
+        { main:{"zh-TW": "尾巴翹高，自信就來了。", "zh-CN": "尾巴翘高，自信就来了。", "en": "Tail up, confidence up."}, action:{"zh-TW": "站起來，肩膀打開，走兩步。", "zh-CN": "站起来，肩膀打开，走两步。", "en": "Stand up. Open your shoulders. Take two steps."}, author:{"zh-TW": "社交名流貓", "zh-CN": "社交名流猫", "en": "Socialite Cat"} },
+        { main:{"zh-TW": "先聞一聞空氣的味道，再出門。", "zh-CN": "先闻一闻空气的味道，再出门。", "en": "Sniff the air before you launch."}, action:{"zh-TW": "深呼吸三次，觀察今天的節奏。", "zh-CN": "深呼吸三次，观察今天的节奏。", "en": "Take 3 deep breaths. Notice today’s pace."}, author:{"zh-TW": "品管員", "zh-CN": "品管员", "en": "Quality Control"} },
+        { main:{"zh-TW": "盯著虛空發呆，是接收宇宙訊號。", "zh-CN": "盯着虚空发呆，是接收宇宙讯号。", "en": "Staring into the void downloads signals."}, action:{"zh-TW": "兩分鐘不看手機，完全放空。", "zh-CN": "两分钟不看手机，完全放空。", "en": "2 minutes. No phone. Pure nothing."}, author:{"zh-TW": "通靈貓貓", "zh-CN": "通灵猫猫", "en": "Psychic Cat"} }],
+      conflict: [{ main:{"zh-TW": "不是你的貓砂盆，就別鏟。", "zh-CN": "不是你的猫砂盆，就别铲。", "en": "Not your litter box. Don’t scoop it."}, action:{"zh-TW": "先問：這真的是我的責任嗎？", "zh-CN": "先问：这真的是我的责任吗？", "en": "Ask: is this actually mine to own?"}, author:{"zh-TW": "路過的貓", "zh-CN": "路过的猫", "en": "Passing Cat"} },
+        { main:{"zh-TW": "沉默不是軟弱，是最高級的鄙視。", "zh-CN": "沉默不是软弱，是最高级的鄙视。", "en": "Silence isn’t weakness. It’s dismissal."}, action:{"zh-TW": "先停 10 秒再回。", "zh-CN": "先停 10 秒再回。", "en": "Wait 10 seconds before replying."}, author:{"zh-TW": "已讀不回的智慧", "zh-CN": "已读不回的智慧", "en": "Left on Read"} },
+        { main:{"zh-TW": "禮貌地說『不』，很帥。", "zh-CN": "礼貌地说『不』，很帅。", "en": "A polite ‘no’ is powerful."}, action:{"zh-TW": "用一句話設界線：我現在不方便。", "zh-CN": "用一句话设界线：我现在不方便。", "en": "Set a boundary: ‘I can’t do that right now.’"}, author:{"zh-TW": "兇猛小貓", "zh-CN": "凶猛小猫", "en": "Feisty Kitten"} },
+        { main:{"zh-TW": "不想聽，就留給對方一個優雅的屁股。", "zh-CN": "不想听，就留给对方一个优雅的屁股。", "en": "If needed, give them the tail."}, action:{"zh-TW": "把視窗縮小，先去倒杯水。", "zh-CN": "把视窗缩小，先去倒杯水。", "en": "Minimize the window. Get water."}, author:{"zh-TW": "背影殺手", "zh-CN": "背影杀手", "en": "Cold Shoulder"} },
+        { main:{"zh-TW": "耳朵飛機耳是最後警告。", "zh-CN": "耳朵飞机耳是最后警告。", "en": "Ear flick is the final warning."}, action:{"zh-TW": "說：我稍後回覆，先退出戰場。", "zh-CN": "说：我稍后回复，先退出战场。", "en": "Say ‘I’ll reply later’ and exit the battlefield."}, author:{"zh-TW": "不耐煩的耳朵", "zh-CN": "不耐烦的耳朵", "en": "Flicking Ears"} },
+        { main:{"zh-TW": "爪子不用伸出來，但要讓人知道你有。", "zh-CN": "爪子不用伸出来，但要让人知道你有。", "en": "Keep claws sheathed, but known."}, action:{"zh-TW": "把規則說清楚一次就好。", "zh-CN": "把规则说清楚一次就好。", "en": "State the rule once, clearly."}, author:{"zh-TW": "金鋼狼貓", "zh-CN": "金钢狼猫", "en": "Wolverine Cat"} },
+        { main:{"zh-TW": "慢慢眨眼，是無聲審判。", "zh-CN": "慢慢眨眼，是无声审判。", "en": "Slow blink: silent judgment."}, action:{"zh-TW": "慢眨三次，讓情緒降溫。", "zh-CN": "慢眨三次，让情绪降温。", "en": "Slow blink 3 times to cool down."}, author:{"zh-TW": "眼神裁判", "zh-CN": "眼神裁判", "en": "Judgey Eyes"} },
+        { main:{"zh-TW": "與其爭，不如問：重點是什麼？", "zh-CN": "与其争，不如问：重点是什么？", "en": "Instead of arguing, ask: what’s the point?"}, action:{"zh-TW": "把對話拉回目標：我們要解決什麼？", "zh-CN": "把对话拉回目标：我们要解决什么？", "en": "Refocus: what are we solving?"}, author:{"zh-TW": "轉移話題大師", "zh-CN": "转移话题大师", "en": "Distractor"} },
+        { main:{"zh-TW": "噪音來了，就戴上耳機。", "zh-CN": "噪音来了，就戴上耳机。", "en": "When the noise hits, put on headphones."}, action:{"zh-TW": "播放白噪音 5 分鐘。", "zh-CN": "播放白噪音 5 分钟。", "en": "Play white noise for 5 minutes."}, author:{"zh-TW": "吸塵器恐懼症", "zh-CN": "吸尘器恐惧症", "en": "Vacuum Hater"} },
+        { main:{"zh-TW": "你有九條命，但耐心不用全花在這裡。", "zh-CN": "你有九条命，但耐心不用全花在这里。", "en": "Nine lives. Don’t spend your patience here."}, action:{"zh-TW": "結束無效爭論：先到此為止。", "zh-CN": "结束无效争论：先到此为止。", "en": "End the loop: ‘Let’s pause here.’"}, author:{"zh-TW": "不耐煩大王", "zh-CN": "不耐烦大王", "en": "Impatient One"} }],
+      win: [{ main:{"zh-TW": "做到了就該誇自己。", "zh-CN": "做到了就该夸自己。", "en": "You did it. Give yourself credit."}, action:{"zh-TW": "停 10 秒看成果，再往下走。", "zh-CN": "停 10 秒看成果，再往下走。", "en": "Pause 10 seconds to appreciate, then continue."}, author:{"zh-TW": "狩獵之神", "zh-CN": "狩猎之神", "en": "Hunter God"} },
+        { main:{"zh-TW": "勝利像鮪魚罐頭一樣香。", "zh-CN": "胜利像鲔鱼罐头一样香。", "en": "Victory smells like fresh tuna."}, action:{"zh-TW": "獎勵自己一個小點心。", "zh-CN": "奖励自己一个小点心。", "en": "Give yourself a small treat."}, author:{"zh-TW": "罐罐品鑑師", "zh-CN": "罐罐品鉴师", "en": "Food Critic"} },
+        { main:{"zh-TW": "把呼嚕開到最大，讓世界知道你爽。", "zh-CN": "把呼噜开到最大，让世界知道你爽。", "en": "Turn purr to max. Let it be known."}, action:{"zh-TW": "跟一個人分享你的好消息。", "zh-CN": "跟一个人分享你的好消息。", "en": "Share the win with one person."}, author:{"zh-TW": "呼嚕發動機", "zh-CN": "呼噜发动机", "en": "Purr Engine"} },
+        { main:{"zh-TW": "落地要優雅。", "zh-CN": "落地要优雅。", "en": "Land it elegantly."}, action:{"zh-TW": "把檔案存好、關掉多餘視窗。", "zh-CN": "把档案存好、关掉多余视窗。", "en": "Save files. Close extra tabs."}, author:{"zh-TW": "體操選手", "zh-CN": "体操选手", "en": "Gymnast"} },
+        { main:{"zh-TW": "露肚子是最高級放鬆。", "zh-CN": "露肚子是最高级放松。", "en": "Belly up is peak relaxation."}, action:{"zh-TW": "把肩膀放下來，吐一口氣。", "zh-CN": "把肩膀放下来，吐一口气。", "en": "Drop your shoulders. Exhale."}, author:{"zh-TW": "翻肚貓", "zh-CN": "翻肚猫", "en": "Belly Up"} },
+        { main:{"zh-TW": "擊掌！肉球在此。", "zh-CN": "击掌！肉球在此。", "en": "High five—paws up."}, action:{"zh-TW": "自己拍手一下，標記完成。", "zh-CN": "自己拍手一下，标记完成。", "en": "Clap once to mark ‘done.’"}, author:{"zh-TW": "擊掌貓", "zh-CN": "击掌猫", "en": "High Five Cat"} },
+        { main:{"zh-TW": "品質是沒人看也把貓砂蓋好。", "zh-CN": "品质是没人看也把猫砂盖好。", "en": "Quality is covering the litter even unseen."}, action:{"zh-TW": "最後檢查一次，優雅送出。", "zh-CN": "最后检查一次，优雅送出。", "en": "Do one final check. Send with style."}, author:{"zh-TW": "貓砂盆的守護者", "zh-CN": "猫砂盆的守护者", "en": "Litter Guardian"} },
+        { main:{"zh-TW": "不跟別人比，你自己知道就行。", "zh-CN": "不跟别人比，你自己知道就行。", "en": "No comparison needed. You know."}, action:{"zh-TW": "關掉社群 10 分鐘，享受成果。", "zh-CN": "关掉社群 10 分钟，享受成果。", "en": "Close social for 10 mins. Enjoy the result."}, author:{"zh-TW": "淡定貓", "zh-CN": "淡定猫", "en": "Zen Cat"} },
+        { main:{"zh-TW": "把尾巴圍好，完美收尾。", "zh-CN": "把尾巴围好，完美收尾。", "en": "Tail wrap—perfect finish."}, action:{"zh-TW": "整理桌面 1 分鐘，收工。", "zh-CN": "整理桌面 1 分钟，收工。", "en": "Tidy for 1 minute. Wrap up."}, author:{"zh-TW": "優雅坐姿", "zh-CN": "优雅坐姿", "en": "Elegant Sit"} },
+        { main:{"zh-TW": "贏了之後？當然是睡。", "zh-CN": "赢了之后？当然是睡。", "en": "After winning? Obviously, nap."}, action:{"zh-TW": "安排今天最早能睡的時間。", "zh-CN": "安排今天最早能睡的时间。", "en": "Set the earliest bedtime you can."}, author:{"zh-TW": "冠軍睡神", "zh-CN": "冠军睡神", "en": "Champion Sleeper"} }],
+      tired: [{ main:{"zh-TW": "休息不是偷懶，是必要維修。", "zh-CN": "休息不是偷懒，是必要维修。", "en": "Rest isn’t laziness. It’s maintenance."}, action:{"zh-TW": "手機螢幕朝下，閉眼 3 分鐘。", "zh-CN": "手机屏幕朝下，闭眼 3 分钟。", "en": "Flip phone down. Close eyes for 3 minutes."}, author:{"zh-TW": "沒電的貓", "zh-CN": "没电的猫", "en": "Low Battery Cat"} },
+        { main:{"zh-TW": "今天切換成 0.5 倍速。", "zh-CN": "今天切换成 0.5 倍速。", "en": "Today runs at 0.5x speed."}, action:{"zh-TW": "走慢一點、打字慢一點。", "zh-CN": "走慢一点、打字慢一点。", "en": "Walk slower. Type slower."}, author:{"zh-TW": "樹懶貓", "zh-CN": "树懒猫", "en": "Sloth Cat"} },
+        { main:{"zh-TW": "你可以液體化 5 分鐘。", "zh-CN": "你可以液体化 5 分钟。", "en": "You may go liquid for 5 minutes."}, action:{"zh-TW": "把身體放鬆，靠著椅背。", "zh-CN": "把身体放松，靠着椅背。", "en": "Let your body melt into the chair."}, author:{"zh-TW": "軟爛的沙發", "zh-CN": "软烂的沙发", "en": "Mushy Sofa"} },
+        { main:{"zh-TW": "請勿拍打餵食。", "zh-CN": "请勿拍打喂食。", "en": "Do not disturb."}, action:{"zh-TW": "開啟勿擾 20 分鐘。", "zh-CN": "开启勿扰 20 分钟。", "en": "Turn on DND for 20 minutes."}, author:{"zh-TW": "勿擾模式", "zh-CN": "勿扰模式", "en": "DND Mode"} },
+        { main:{"zh-TW": "躲進角落也算自救。", "zh-CN": "躲进角落也算自救。", "en": "Hiding counts as self-care."}, action:{"zh-TW": "找個安靜角落待 5 分鐘。", "zh-CN": "找个安静角落待 5 分钟。", "en": "Hide in a quiet corner for 5 minutes."}, author:{"zh-TW": "鴕鳥心態貓", "zh-CN": "鸵鸟心态猫", "en": "Ostrich Cat"} },
+        { main:{"zh-TW": "反應慢沒關係，尾巴也會延遲。", "zh-CN": "反应慢没关系，尾巴也会延迟。", "en": "Lag is okay—tails lag too."}, action:{"zh-TW": "對外回一句：我還在思考。", "zh-CN": "对外回一句：我还在思考。", "en": "Say: ‘I’m still thinking.’"}, author:{"zh-TW": "延遲貓", "zh-CN": "延迟猫", "en": "Laggy Cat"} },
+        { main:{"zh-TW": "鍵盤是枕頭的形狀。", "zh-CN": "键盘是枕头的形状。", "en": "The keyboard is pillow-shaped."}, action:{"zh-TW": "離開螢幕 2 分鐘。", "zh-CN": "离开屏幕 2 分钟。", "en": "Step away from the screen for 2 minutes."}, author:{"zh-TW": "鍵盤毀滅者", "zh-CN": "键盘毁灭者", "en": "Keyboard Pillow"} },
+        { main:{"zh-TW": "盯著灰塵飄，也很有趣。", "zh-CN": "盯着灰尘飘，也很有趣。", "en": "Watching dust is entertainment."}, action:{"zh-TW": "看窗外 60 秒，不做事。", "zh-CN": "看窗外 60 秒，不做事。", "en": "Look outside for 60 seconds. Do nothing."}, author:{"zh-TW": "放空貓", "zh-CN": "放空猫", "en": "Staring Cat"} },
+        { main:{"zh-TW": "今天不營業。改天再來。", "zh-CN": "今天不营业。改天再来。", "en": "Closed today. Try again later."}, action:{"zh-TW": "拒掉一個不必要的會議。", "zh-CN": "拒掉一个不必要的会议。", "en": "Cancel one unnecessary meeting."}, author:{"zh-TW": "拒絕貓", "zh-CN": "拒绝猫", "en": "Refusal Cat"} },
+        { main:{"zh-TW": "累到忘了把舌頭收回去。", "zh-CN": "累到忘了把舌头收回去。", "en": "So tired you forget your tongue."}, action:{"zh-TW": "做個鬼臉，放鬆下顎。", "zh-CN": "做个鬼脸，放松下颚。", "en": "Make a silly face. Relax your jaw."}, author:{"zh-TW": "忘記收舌頭", "zh-CN": "忘记收舌头", "en": "BleP Cat"} }],
+      push: [{ main:{"zh-TW": "一次只專心一件事。", "zh-CN": "一次只专心一件事。", "en": "One thing at a time."}, action:{"zh-TW": "設定 10 分鐘計時器，這段只做一件事。", "zh-CN": "设定 10 分钟计时器，这段只做一件事。", "en": "Set 10 minutes. Do one task only."}, author:{"zh-TW": "追光者", "zh-CN": "追光者", "en": "Laser Focus"} },
+        { main:{"zh-TW": "瞳孔放大，鎖定目標。", "zh-CN": "瞳孔放大，锁定目标。", "en": "Eyes wide. Lock the target."}, action:{"zh-TW": "關掉通知 25 分鐘。", "zh-CN": "关掉通知 25 分钟。", "en": "Turn off notifications for 25 minutes."}, author:{"zh-TW": "狩獵者", "zh-CN": "狩猎者", "en": "The Hunter"} },
+        { main:{"zh-TW": "默默做，做完再說。", "zh-CN": "默默做，做完再说。", "en": "Work in silence. Speak after."}, action:{"zh-TW": "先做一段最小可交付。", "zh-CN": "先做一段最小可交付。", "en": "Ship a tiny deliverable first."}, author:{"zh-TW": "刺客貓", "zh-CN": "刺客猫", "en": "Assassin Cat"} },
+        { main:{"zh-TW": "路不通？那就往上爬。", "zh-CN": "路不通？那就往上爬。", "en": "No path? Climb vertically."}, action:{"zh-TW": "換個角度，把問題拆小。", "zh-CN": "换个角度，把问题拆小。", "en": "Change angle. Break it down."}, author:{"zh-TW": "攀岩高手", "zh-CN": "攀岩高手", "en": "Climber"} },
+        { main:{"zh-TW": "先磨爪，再出招。", "zh-CN": "先磨爪，再出招。", "en": "Sharpen claws before action."}, action:{"zh-TW": "把工具準備好：文件/素材/連結。", "zh-CN": "把工具准备好：文件/素材/链接。", "en": "Prep tools: doc/assets/links."}, author:{"zh-TW": "備戰狀態", "zh-CN": "备战状态", "en": "Battle Ready"} },
+        { main:{"zh-TW": "吞青蛙：先解最難的。", "zh-CN": "吞青蛙：先解最难的。", "en": "Eat the frog: hardest first."}, action:{"zh-TW": "列出 1 件最難的，先做 5 分鐘。", "zh-CN": "列出 1 件最难的，先做 5 分钟。", "en": "Pick the hardest item. Start 5 minutes."}, author:{"zh-TW": "草叢裡的眼睛", "zh-CN": "草丛里的眼睛", "en": "Ambush Eyes"} },
+        { main:{"zh-TW": "衝刺 10 分鐘，休息 2 分鐘。", "zh-CN": "冲刺 10 分钟，休息 2 分钟。", "en": "Sprint 10, rest 2."}, action:{"zh-TW": "開一個短計時循環。", "zh-CN": "开一个短计时循环。", "en": "Start a short timer loop."}, author:{"zh-TW": "獵豹親戚", "zh-CN": "猎豹亲戚", "en": "Cheetah Cousin"} },
+        { main:{"zh-TW": "不要想太多，先開始。", "zh-CN": "不要想太多，先开始。", "en": "Don’t overthink. Start."}, action:{"zh-TW": "把第一步寫下來並完成。", "zh-CN": "把第一步写下来并完成。", "en": "Write the first step. Finish it."}, author:{"zh-TW": "神經反射", "zh-CN": "神经反射", "en": "Reflexes"} },
+        { main:{"zh-TW": "戴上耳機，進入絕對領域。", "zh-CN": "戴上耳机，进入绝对领域。", "en": "Headphones on. Enter the zone."}, action:{"zh-TW": "播放一首重複音樂，鎖定節奏。", "zh-CN": "播放一首重复音乐，锁定节奏。", "en": "Loop one track to lock rhythm."}, author:{"zh-TW": "紙箱堡壘", "zh-CN": "纸箱堡垒", "en": "Box Fortress"} },
+        { main:{"zh-TW": "準備好了就跳。", "zh-CN": "准备好了就跳。", "en": "When ready, pounce."}, action:{"zh-TW": "選一個決策，5 秒內定案。", "zh-CN": "选一个决策，5 秒内定案。", "en": "Pick one decision. Decide in 5 seconds."}, author:{"zh-TW": "伏擊專家", "zh-CN": "伏击专家", "en": "Ambush Expert"} }],
+    };
+
+    const CATS = [
+      { id:"gentle", name:{'zh-TW':"溫柔貓",'zh-CN':"温柔猫",'en':"Gentle"}, color:"#EADBC8" },
+      { id:"focus",  name:{'zh-TW':"專注貓",'zh-CN':"专注猫",'en':"Focus"},  color:"#D7CCC8" },
+      { id:"wise",   name:{'zh-TW':"智慧貓",'zh-CN':"智慧猫",'en':"Wise"},   color:"#CFD8DC" },
+      { id:"rest",   name:{'zh-TW':"休息貓",'zh-CN':"休息猫",'en':"Rest"},   color:"#FFE0B2" }
+    ];
+
+    function CatSVG(props){
+      return e("svg",{viewBox:"0 0 100 90"},
+        e("path",{d:"M20 90 Q 10 50, 30 35 Q 40 25, 60 25 Q 80 25, 90 50 Q 100 90, 80 90 Z", fill:props.color}),
+        e("path",{d:"M25 40 L 20 15 L 45 30", fill:props.color}),
+        e("path",{d:"M75 40 L 80 15 L 55 30", fill:props.color}),
+        e("path",{d:"M28 35 L 25 20 L 40 30", fill:"#FFCCBC", opacity:0.55}),
+        e("path",{d:"M72 35 L 75 20 L 60 30", fill:"#FFCCBC", opacity:0.55}),
+        e("circle",{cx:40, cy:55, r:4, fill:"#3E2723"}),
+        e("circle",{cx:80, cy:55, r:4, fill:"#3E2723"}),
+        e("path",{d:"M55 60 L 60 65 L 65 60", fill:"none", stroke:"#3E2723", strokeWidth: 1.5, strokeLinecap:"round", strokeLinejoin:"round"}),
+        e("circle",{cx:60, cy:58, r:2, fill:"#FFAB91"})
+      );
+    }
+
+    
+    
+    function CatLogoSVG(){
+      const p = { width: 20, height: 20, viewBox: "0 0 100 90", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" };
+      return e("svg", p,
+        e("path",{ d:"M20 90 Q 10 50, 30 35 Q 40 25, 60 25 Q 80 25, 90 50 Q 100 90, 80 90 Z" }),
+        e("path",{ d:"M25 40 L 20 15 L 45 30" }),
+        e("path",{ d:"M75 40 L 80 15 L 55 30" }),
+        e("circle",{ cx:40, cy:55, r:3 }),
+        e("circle",{ cx:80, cy:55, r:3 }),
+        e("path",{ d:"M55 60 L 60 65 L 65 60" })
+      );
+    }
+
+function SvgIcon(name){
+      const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" };
+      if (name === "fish") {
+        return e("svg", common,
+          e("path", { d:"M6.5 12c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z" }),
+          e("path", { d:"M2 12c0 2 2 3.5 4 4.5 1.5.75 5 1.5 9 .5 2.5-.6 6-2 6-5s-3.5-4.4-6-5c-4-1-7.5-.25-9 .5-2 1-4 2.5-4 4.5z" }),
+          e("path", { d:"M19 12c0 1.5 2 3 3 3v-6c-1 0-3 1.5-3 3z" })
+        );
+      }
+      if (name === "bookmark") {
+        return e("svg", common,
+          e("path", { d:"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" })
+        );
+      }
+      if (name === "heart") {
+        return e("svg", common,
+          e("path", { d:"M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" })
+        );
+      }
+      if (name === "heartFill") {
+        // Filled look using two paths; still stroke-only, but thicker to feel filled
+        const filled = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "currentColor", stroke: "none" };
+        return e("svg", filled,
+          e("path", { d:"M12 21s-7-4.6-9.3-8.6C.7 8.9 3 5.5 6.8 5.1c1.8-.2 3.6.6 5.2 2.2 1.6-1.6 3.4-2.4 5.2-2.2 3.8.4 6.1 3.8 4.1 7.3C19 16.4 12 21 12 21z" })
+        );
+      }
+      if (name === "share") {
+        return e("svg", common,
+          e("path", { d:"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" }),
+          e("polyline", { points:"16 6 12 2 8 6" }),
+          e("line", { x1:"12", y1:"2", x2:"12", y2:"15" })
+        );
+      }
+      if (name === "globe") {
+        return e("svg", common,
+          e("circle",{cx:"12", cy:"12", r:"10"}),
+          e("path",{d:"M2 12h20"}),
+          e("path",{d:"M12 2a15 15 0 0 1 0 20"}),
+          e("path",{d:"M12 2a15 15 0 0 0 0 20"})
+        );
+      }
+      if (name === "breath") {
+        return e("svg", common,
+          e("circle",{cx:"12", cy:"12", r:"10"}),
+          e("path",{d:"M8 12h8"}),
+          e("path",{d:"M12 8v8"})
+        );
+      }
+      if (name === "palette") { return e("svg", common, e("path",{d:"M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 0-4h-1a1 1 0 0 1 0-2h1a4 4 0 0 0 0-8h-2"})); }
+      if (name === "more") {
+        return e("svg", common,
+          e("circle",{cx:"5", cy:"12", r:"1"}),
+          e("circle",{cx:"12", cy:"12", r:"1"}),
+          e("circle",{cx:"19", cy:"12", r:"1"})
+        );
+      }
+      if (name === "x") {
+        return e("svg", common,
+          e("line", { x1:"18", y1:"6", x2:"6", y2:"18" }),
+          e("line", { x1:"6", y1:"6", x2:"18", y2:"18" })
+        );
+      }
+      return e("span", null, "?");
+    }
+
+function parseCSV(text){
+      const rows = [];
+      let row = [], cur = "", inQuotes = false;
+      for (let i=0;i<text.length;i++){
+        const ch = text[i];
+        const next = text[i+1];
+        if (ch === '"' && next === '"') { cur += '"'; i++; continue; }
+        if (ch === '"') { inQuotes = !inQuotes; continue; }
+        if (!inQuotes && ch === ',') { row.push(cur); cur=""; continue; }
+        if (!inQuotes && (ch === '\n' || ch === '\r')) {
+          if (ch === '\r' && next === '\n') i++;
+          row.push(cur); cur="";
+          if (row.length > 1 || row[0] !== "") rows.push(row);
+          row = [];
+          continue;
+        }
+        cur += ch;
+      }
+      row.push(cur);
+      if (row.length > 1 || row[0] !== "") rows.push(row);
+      return rows;
+    }
+
+    function normalizeFromSheet(csvText){
+      const rows = parseCSV(csvText);
+      if (rows.length < 2) return null;
+      const header = rows[0].map(h => (h||"").trim());
+      const idx = (name) => header.indexOf(name);
+
+      const iScenario = idx("scenarioIds");
+      const iMain = idx("main_tw");
+      const iAction = idx("action_tw");
+      const iAuthor = idx("author_tw");
+
+      const iMusicType = idx("music_type");
+      const iMusicHintTW = idx("music_hint_tw");
+      const iMusicHintCN = idx("music_hint_cn");
+      const iMusicHintEN = idx("music_hint_en");
+      const iMusicUrl = idx("music_url");
+      if (iMain === -1) return null;
+
+      const out = { start:[], conflict:[], win:[], tired:[], push:[] };
+
+      for (let r=1;r<rows.length;r++){
+        const cols = rows[r];
+        const main = (cols[iMain] || "").trim();
+        if (!main) continue;
+        const action = iAction === -1 ? "" : (cols[iAction] || "").trim();
+        const author = iAuthor === -1 ? "" : (cols[iAuthor] || "").trim();
+        const scenarioIds = iScenario === -1 ? [] : (cols[iScenario] || "").split(",").map(s=>s.trim()).filter(Boolean);
+
+        const musicType = iMusicType === -1 ? "" : (cols[iMusicType] || "").trim();
+        const musicHint = {
+          "zh-TW": iMusicHintTW === -1 ? "" : (cols[iMusicHintTW] || "").trim(),
+          "zh-CN": iMusicHintCN === -1 ? "" : (cols[iMusicHintCN] || "").trim(),
+          "en": iMusicHintEN === -1 ? "" : (cols[iMusicHintEN] || "").trim()
+        };
+        const musicUrl = iMusicUrl === -1 ? "" : (cols[iMusicUrl] || "").trim();
+
+        const item = { main, action, author: author || "貓大師", music_type: musicType, music_hint: musicHint, music_url: musicUrl };
+
+        if (!scenarioIds.length){
+          Object.keys(out).forEach(k => out[k].push(item));
+        } else {
+          scenarioIds.forEach(sid => { if (out[sid]) out[sid].push(item); });
+        }
+      }
+      const total = Object.values(out).reduce((a,b)=>a+b.length,0);
+      return total ? out : null;
+    }
+
+    function pickRandom(arr){
+      return arr[Math.floor(Math.random()*arr.length)];
+    }
+
+    function safeReadJSON(key, fallback){
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch(e) { return fallback; }
+    }
+    function safeWriteJSON(key, value){
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
+    }
+
+    function App(){
+      const [step, setStep] = useState("state"); // state → quote → cat → rx
+      const [selectedState, setSelectedState] = useState(null);
+      const [scenario, setScenario] = useState(null);
+      const [quote, setQuote] = useState(null);
+
+      const [rxNo, setRxNo] = useState(()=>{
+        try { return parseInt(localStorage.getItem("rx_no")||"0"); } catch(e){ return 0; }
+      });
+
+      // Fish counter (persist)
+      
+      const [currentLang, setCurrentLang] = useState(()=>{
+        try { return localStorage.getItem("meow_lang") || "zh-TW"; } catch(e){ return "zh-TW"; }
+      });
+      const [showLang, setShowLang] = useState(false);
+      const [showMore, setShowMore] = useState(false);
+      const [showBreath, setShowBreath] = useState(false);
+
+const CAT_THEMES = {
+  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"./icons/gentle.svg", focus:"./icons/focus.svg", wise:"./icons/wise.svg", rest:"./icons/sleep.svg" } },
+  night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"./icons/gentle.svg", focus:"./icons/focus.svg", wise:"./icons/wise.svg", rest:"./icons/sleep.svg" } },
+  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"./icons/gentle.svg", focus:"./icons/focus.svg", wise:"./icons/wise.svg", rest:"./icons/sleep.svg" } }
+};
+const [catTheme, setCatTheme] = useState(()=>{ try { return localStorage.getItem("meow_cat_theme") || "classic"; } catch(e){ return "classic"; }});
+const [showTheme, setShowTheme] = useState(false);
+useEffect(()=>{ try { localStorage.setItem("meow_cat_theme", catTheme); } catch(e){} }, [catTheme]);
+function getThemeText(val){
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  return val[currentLang] || val["zh-TW"] || val["zh-CN"] || val["en"] || "";
+}
+function getCatIcon(catId, fallbackNode){
+  const theme = CAT_THEMES[catTheme] || CAT_THEMES.classic;
+  const path = theme.icons && theme.icons[catId];
+  if (path) return e("img",{src:path, alt:"", style:{width:"72px", height:"72px"}});
+  return fallbackNode;
+}
+
+const audioRef = useRef({ ctx: null, stop: null, type: null });
+      const linkAudioRef = useRef(null);
+      const [isLinkPlaying, setIsLinkPlaying] = useState(false);
+      const [linkUrlNow, setLinkUrlNow] = useState("");
+
+const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+
+function stopMusic(){
+  const a = audioRef.current;
+  try { if (a.stop) a.stop(); } catch(e){}
+  a.stop = null; a.type = null;
+  setIsMusicPlaying(false);
+}
+
+function ensureCtx(){
+  const a = audioRef.current;
+  if (a.ctx && a.ctx.state !== "closed") return a.ctx;
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  a.ctx = new Ctx();
+  return a.ctx;
+}
+
+function playMusic(type){
+  const ctx = ensureCtx();
+  if (!ctx) return;
+
+  if (audioRef.current.type === type && isMusicPlaying){
+    stopMusic();
+    return;
+  }
+  stopMusic();
+
+  const makeNoise = () => {
+    const bufferSize = 2 * ctx.sampleRate;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i=0;i<bufferSize;i++) output[i] = Math.random()*2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer;
+    src.loop = true;
+    return src;
+  };
+
+  let stopFn = null;
+
+  if (type === "white_noise") {
+    const src = makeNoise();
+    const gain = ctx.createGain();
+    gain.gain.value = 0.03;
+    src.connect(gain).connect(ctx.destination);
+    src.start();
+    stopFn = () => { try { src.stop(); } catch(e){}; };
+  } else if (type === "rain") {
+    const src = makeNoise();
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 1200;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.025;
+    src.connect(filter).connect(gain).connect(ctx.destination);
+    src.start();
+    stopFn = () => { try { src.stop(); } catch(e){}; };
+  } else if (type === "lofi") {
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    o1.type = "sine"; o2.type = "triangle";
+    o1.frequency.value = 220; o2.frequency.value = 110;
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass"; lp.frequency.value = 800;
+    const g = ctx.createGain();
+    g.gain.value = 0.015;
+    o1.connect(lp); o2.connect(lp);
+    lp.connect(g).connect(ctx.destination);
+    o1.start(); o2.start();
+    stopFn = () => { try { o1.stop(); o2.stop(); } catch(e){}; };
+  } else {
+    return;
+  }
+
+  audioRef.current.stop = stopFn;
+  audioRef.current.type = type;
+  setIsMusicPlaying(true);
+}
+
+function openMusicUrl(url){
+  if (!url) return false;
+  try { window.open(url, "_blank", "noopener,noreferrer"); return true; } catch(e){ return false; }
+}
+
+function playLinkAudio(url){
+  if (!url) return false;
+  // Only direct audio files are playable in-app (mp3/ogg/wav)
+  const isDirect = /\.(mp3|ogg|wav)(\?|#|$)/i.test(url);
+  if (!isDirect) return false;
+
+  const el = linkAudioRef.current;
+  if (!el) return false;
+
+  // Toggle if same URL and currently playing
+  if (linkUrlNow === url && !el.paused){
+    el.pause();
+    setIsLinkPlaying(false);
+    return true;
+  }
+
+  try {
+    el.src = url;
+    el.currentTime = 0;
+    const p = el.play();
+    setLinkUrlNow(url);
+    setIsLinkPlaying(true);
+    if (p && typeof p.catch === "function"){
+      p.catch(()=>{ setIsLinkPlaying(false); });
+    }
+    return true;
+  } catch(e){
+    setIsLinkPlaying(false);
+    return false;
+  }
+}
+
+
+useEffect(()=>{ if (step !== "rx" && isMusicPlaying) stopMusic(); }, [step]);
+// stop link-audio when leaving RX
+useEffect(()=>{
+  if (step !== "rx" && linkAudioRef.current){
+    try { linkAudioRef.current.pause(); } catch(e){}
+    setIsLinkPlaying(false);
+  }
+}, [step]);
+
+
+
+      function t(key){
+        const pack = UI_TEXT[currentLang] || UI_TEXT["zh-TW"];
+        return pack[key] || (UI_TEXT["zh-TW"][key] || key);
+      }
+
+      function getText(val){
+        if (!val) return "";
+        if (typeof val === "string") return val;
+        return val[currentLang] || val["zh-TW"] || val["zh-CN"] || val["en"] || "";
+      }
+
+      useEffect(()=>{
+        try { localStorage.setItem("meow_lang", currentLang); } catch(e){}
+      }, [currentLang]);
+
+      useEffect(()=>{
+        const onDoc = (ev)=>{
+          // close popovers on any outside click
+          setShowMore(false);
+          setShowLang(false);
+            setShowTheme(false);
+        };
+        document.addEventListener('click', onDoc);
+        return ()=> document.removeEventListener('click', onDoc);
+      }, []);
+
+const [fishCount, setFishCount] = useState(()=>{
+        try { return parseInt(localStorage.getItem("meow_fish")||"0"); } catch(e){ return 0; }
+      });
+
+      // Favorites (persist)
+      const [favorites, setFavorites] = useState(()=>{
+        const raw = safeReadJSON("meow_favs", []);
+        // migrate legacy shape: {main:string, action:string, author:string}
+        return (raw || []).map(it => {
+          if (!it) return null;
+          if (typeof it.main === "string") it.main = {'zh-TW': it.main};
+          if (typeof it.action === "string") it.action = {'zh-TW': it.action};
+          if (typeof it.author === "string") it.author = {'zh-TW': it.author};
+          return it;
+        }).filter(Boolean);
+      });
+      const [showFavs, setShowFavs] = useState(false);
+
+      const [toast, setToast] = useState("");
+
+      const [headerScrolled, setHeaderScrolled] = useState(false);
+
+      useEffect(()=>{
+        const onScroll = ()=>{ setHeaderScrolled(window.scrollY > 6); };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive:true });
+        return ()=> window.removeEventListener('scroll', onScroll);
+      }, []);
+
+
+      const [quotesByScenario, setQuotesByScenario] = useState(FALLBACK_QUOTES);
+      const [dataSource, setDataSource] = useState("fallback"); // sheet | fallback
+      const [pendingCatId, setPendingCatId] = useState(null);
+
+      useEffect(()=>{
+        safeWriteJSON("meow_favs", favorites);
+      }, [favorites]);
+
+      useEffect(()=>{
+        try { localStorage.setItem("meow_fish", String(fishCount)); } catch(e){}
+      }, [fishCount]);
+
+      useEffect(()=>{
+        if (!GOOGLE_SHEET_CSV_URL) return;
+        let cancelled = false;
+        fetch(GOOGLE_SHEET_CSV_URL, { cache:"no-store" })
+          .then(r=>r.text())
+          .then(text=>{
+            if (cancelled) return;
+            const normalized = normalizeFromSheet(text);
+            if (normalized) { setQuotesByScenario(normalized); setDataSource("sheet"); }
+          })
+          .catch(()=>{});
+        return ()=>{ cancelled = true; };
+      }, []);
+
+      function showToast(msg){
+        setToast(msg);
+        setTimeout(()=>setToast(""), 1800);
+      }
+
+      function isFavCurrent(){
+        if (!quote) return false;
+        const key = getText(quote.main) + "||" + getText(quote.author) + "||" + getText(quote.action);
+        return favorites.some(f => f.key === key);
+      }
+
+      function toggleFavorite(){
+        if (!quote) return;
+        const key = getText(quote.main) + "||" + getText(quote.author) + "||" + getText(quote.action);
+        if (favorites.some(f => f.key === key)){
+          setFavorites(favorites.filter(f => f.key !== key));
+          showToast(t("removed"));
+        } else {
+          const item = {
+            key,
+            main: quote.main || {'zh-TW': ""},
+            action: quote.action || {'zh-TW': ""},
+            author: quote.author || {'zh-TW': ""},
+            scenario: scenario || ""
+          };
+          setFavorites([item, ...favorites]);
+          showToast(t("saved"));
+        }
+      }
+
+      function removeFavorite(key){
+        setFavorites(favorites.filter(f => f.key !== key));
+      }
+
+      function copyToClipboard(text){
+        const footer = " — 來自 喵～時刻 Meow~ Moment";
+        const payload = text + footer;
+        if (navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(payload).then(()=>showToast(t("copied"))).catch(()=>showToast(t("copyFail")));
+          return;
+        }
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = payload;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          showToast(t("copied"));
+        } catch(e){
+          showToast(t("copyFail"));
+        }
+      }
+
+      function shareCurrent(){
+        if (!quote) { showToast(t("copyFail")); return; }
+        const text = quote.main ? (quote.main + (quote.author ? (" — " + quote.author) : "")) : "";
+        const action = quote.action ? ("\n\n貓的處方：\n" + quote.action) : "";
+        copyToClipboard(text + action + "\n");
+      }
+
+      function bumpFish(){
+        const next = fishCount + 1;
+        setFishCount(next);
+      }
+
+      function chooseState(s){
+        setSelectedState(s);
+        setScenario(s);
+        const list = quotesByScenario[s] && quotesByScenario[s].length ? quotesByScenario[s] : FALLBACK_QUOTES[s];
+        setQuote(pickRandom(list));
+        setStep("quote");
+        bumpFish();
+      }
+
+      function nextQuote(){
+        const list = quotesByScenario[scenario] && quotesByScenario[scenario].length ? quotesByScenario[scenario] : FALLBACK_QUOTES[scenario];
+        setQuote(pickRandom(list));
+        setStep("quote");
+        bumpFish();
+      }
+
+      function onPickCat(catId){
+        setPendingCatId(catId);
+        setTimeout(() => {
+          const next = rxNo + 1;
+          setRxNo(next);
+          try { localStorage.setItem("rx_no", String(next)); } catch(e){}
+          setStep("rx");
+          setPendingCatId(null);
+        }, 300);
+      }
+
+      function Header(){
+        const favOn = isFavCurrent();
+        const favCount = favorites.length;
+
+        return e("div",{className:"header"+(headerScrolled?" scrolled":"")},
+          e("div",{className:"header-inner"},
+            e("div",{className:"brand"},
+              e("div",{className:"logo"}, CatLogoSVG()),
+              e("div",null,
+                e("div",{className:"title"}, t("appTitle")),
+                e("div",{className:"sub"}, t("appSubtitle"))
+              )
+            ),
+            e("div",{className:"h-actions"},
+              e("div",{className:"badge", title:""},
+                e("span",{className:"fish"}, SvgIcon("fish")),
+                e("span",{className:"count"}, String(fishCount))
+              ),
+              e("div",{className:"desktop-icons", style:{display:"flex", alignItems:"center", gap:"10px"}},
+              e("div",{className:"icon-btn" , title:t("favorites"), onClick:()=>setShowFavs(true)},
+                SvgIcon("bookmark")
+              ),
+              e("div",{className:"icon-btn", title: (favOn ? t("removed") : t("saved")), onClick:toggleFavorite},
+                SvgIcon(favOn ? "heartFill" : "heart")
+              ),
+              e("div",{className:"icon-btn", title:"Breathing", onClick:()=>setShowBreath(true)}, SvgIcon("breath")),
+              e("div",{className:"icon-btn", title:t("copy"), onClick:shareCurrent},
+                SvgIcon("share")
+              )
+              ,
+              e("div",{style:{position:"relative"}},
+                e("div",{className:"icon-btn", title:t("lang"), onClick:(ev)=>{ ev.stopPropagation(); setShowLang(!showLang); }},
+                  SvgIcon("globe")
+                ),
+                showLang ? e("div",{className:"lang-menu", onClick:(ev)=>ev.stopPropagation()},
+                  ["zh-TW","zh-CN","en"].map(code =>
+                    e("div",{
+                      key:code,
+                      className:"lang-item"+(currentLang===code?" active":""),
+                      onClick:()=>{
+                        setCurrentLang(code);
+                        setShowLang(false);
+            setShowTheme(false);
+                      }
+                    },
+                      e("span",null, code==="zh-TW" ? "繁體中文" : (code==="zh-CN" ? "简体中文" : "English")),
+                      currentLang===code ? e("span",null,"✓") : null
+                    )
+                  )
+                ) : null
+              )
+
+              ),
+              e("div",{className:"mobile-more more-wrap", style:{display:"flex"} , onClick:(ev)=>ev.stopPropagation()},
+                e("div",{className:"icon-btn", title:"More", onClick:(ev)=>{ ev.stopPropagation(); setShowMore(!showMore); }},
+                  SvgIcon("more")
+                ),
+                showMore ? e("div",{className:"more-menu", onClick:(ev)=>ev.stopPropagation()},
+                  e("div",{className:"more-item", onClick:()=>{ setShowBreath(true); setShowMore(false); }},
+                    e("div",{className:"more-left"}, SvgIcon("breath"), e("span",null,
+                      currentLang==="en" ? "Breathing"
+                      : (currentLang==="zh-CN" ? "呼吸练习" : "呼吸練習")
+                    )),
+                    null
+                  ),
+
+                  e("div",{className:"more-item", onClick:()=>setShowFavs(true)},
+                    e("div",{className:"more-left"}, SvgIcon("bookmark"), e("span",null, t("favorites"))),
+                    e("div",{className:"more-right"}, String(favorites.length))
+                  ),
+                  e("div",{className:"more-item", onClick:toggleFavorite},
+                    e("div",{className:"more-left"}, SvgIcon(isFavCurrent()? "heartFill":"heart"), e("span",null, isFavCurrent()? t("removed") : t("saved"))),
+                    null
+                  ),
+                  e("div",{className:"more-item", onClick:shareCurrent},
+                    e("div",{className:"more-left"}, SvgIcon("share"), e("span",null, t("copy"))),
+                    null
+                  ),
+                  e("div",{className:"more-item", onClick:(ev)=>{ ev.stopPropagation(); setShowLang(!showLang); }},
+                    e("div",{className:"more-left"}, SvgIcon("globe"), e("span",null, t("lang"))),
+                    null
+                  )
+                ) : null
+              )
+
+            )
+          )
+        );
+      }
+
+      function FavoritesDrawer(){
+        if (!showFavs) return null;
+        return e("div",{className:"overlay", onClick:()=>setShowFavs(false)},
+          e("div",{className:"drawer", onClick:(ev)=>ev.stopPropagation()},
+            e("div",{style:{display:"flex", alignItems:"center", justifyContent:"space-between", gap:"10px"}},
+              e("h3",null, t("favorites")),
+              e("div",{className:"icon-btn", title:t("close"), onClick:()=>setShowFavs(false)},
+                SvgIcon("x")
+              )
+            ),
+            favorites.length === 0
+              ? e("p",{className:"muted"}, t("favEmpty"))
+              : favorites.map(f =>
+                  e("div",{key:f.key, className:"fav-item"},
+                    e("div",{className:"fav-main"}, "“" + getText(f.main) + "”"),
+                    e("div",{className:"fav-meta"},
+                      e("span",null, getText(f.author) ? ("— " + getText(f.author)) : ""),
+                      e("span",null, f.scenario ? f.scenario : "")
+                    ),
+                    getText(f.action) ? e("div",{style:{marginTop:"10px", color:"#555", fontSize:"13px", lineHeight:"1.6"}}, getText(f.action)) : null,
+                    e("div",{className:"fav-actions"},
+                      e("button",{className:"secondary", onClick:()=>copyToClipboard("“"+getText(f.main)+"” — "+(getText(f.author)||"") + (getText(f.action)?("\n\n"+t("masterRx")+"：\n"+getText(f.action)):"") + "\n")}, t("copy")),
+                      e("button",{className:"secondary", onClick:()=>removeFavorite(f.key)}, t("remove"))
+                    )
+                  )
+                )
+          )
+        );
+      }
+
+      
+      function BreathingModal(){
+        if(!showBreath) return null;
+        return e("div",{className:"breath-overlay", onClick:()=>setShowBreath(false)},
+          e("div",{className:"breath-modal", onClick:(ev)=>ev.stopPropagation()},
+            e("div",{className:"breath-title"}, t("masterRx")),
+            e("div",{className:"breath-sub"}, currentLang==="en"
+              ? "Breathe with the cat · 4–4–6"
+              : (currentLang==="zh-CN"
+                ? "跟着猫呼吸 · 4–4–6"
+                : "跟著貓呼吸 · 4–4–6")),
+            e("div",{className:"breath-circle"},
+              currentLang==="en" ? "Inhale · Hold · Exhale"
+              : (currentLang==="zh-CN" ? "吸气 · 停留 · 呼气" : "吸氣 · 停留 · 呼氣")
+            ),
+            e("div",{className:"breath-actions"},
+              e("button",{className:"secondary", onClick:()=>setShowBreath(false)}, t("close"))
+            )
+          )
+        );
+      }
+
+      return e("div", null,
+        e(Header, null),
+        e(FavoritesDrawer, null),
+        e("div",{className:"wrap"},
+          e("div",{className:"top-space"}),
+
+          step==="state" ? e("div",{className:"card"},
+            e("h2",null, t("stateTitle")),
+            e("p",{className:"muted"}, t("stateSubtitle")),
+            e("div",{className:"badge"}, t("dataSource"), " ", (dataSource === "sheet" ? t("dsSheet") : t("dsFallback"))),
+            e("div",{className:"states"},
+              STATES.map(s =>
+                e("div",{
+                  key:s.id,
+                  className:"state"+(selectedState===s.id?" active":""),
+                  onClick:()=>chooseState(s.id)
+                },
+                  e("span",{className:"icon"},s.icon),
+                  e("span",null, getText(s.label))
+                )
+              )
+            )
+          ) : null,
+
+          step==="quote" ? e("div",{className:"card"},
+            e("h2",null,"🐾 "+t("todayQuote")),
+            e("div",{className:"quote"}, quote ? getText(quote.main) : ""),
+            e("div",{className:"author"}, "— " + (quote ? getText(quote.author) : "")),
+            e("p",{className:"muted", style:{textAlign:"center"}}, t("pickCat")),
+            e("div",{className:"cats"},
+              CATS.map(c =>
+                e("div",{key:c.id, className:"cat", onClick:()=>onPickCat(c.id)},
+                  pendingCatId === c.id ? e("div",{className:"stamp"},"🐾") : null,
+                  getCatIcon(c.id, e(CatSVG,{color:c.color})),
+                  e("div",{className:"cat-name"}, getText(c.name))
+                )
+              )
+            ),
+            e("div",{className:"actions"},
+              e("button",{className:"secondary", onClick:()=>setStep("state")}, t("changeState"))
+            )
+          ) : null,
+
+          step==="rx" ? e("div",{className:"card"},
+            e("h2",null,"🐾 "+t("masterRx")),
+            e("div",{className:"rx"},
+              e("div",{className:"rx-head"},
+                e("span",null,"RX-"+String(rxNo).padStart(4,"0")),
+                e("span",null,new Date().toLocaleDateString("zh-TW"))
+              ),
+              e("div",{className:"rx-body"},
+                quote && quote.action ? getText(quote.action) : t("rxMissing")
+              ),
+              (quote && ((quote.music_type && quote.music_type !== "") || (quote.music_hint && getText(quote.music_hint)) || (quote.music_url && quote.music_url !== ""))) ? e("div",{style:{marginTop:"14px"}},
+  e("div",{style:{textAlign:"center", fontSize:"12px", color:"#7d7d7d", letterSpacing:".14em"}},
+    "🎧 ",
+    (currentLang==="en" ? "Music suggestion" : (currentLang==="zh-CN" ? "猫的音乐建议" : "貓的音樂建議"))
+  ),
+
+  // Hint text
+  (quote.music_hint && getText(quote.music_hint)) ? e("div",{style:{marginTop:"8px", fontSize:"13px", color:"#444", lineHeight:"1.6", textAlign:"center"}}, getText(quote.music_hint)) : null,
+
+  // Controls row
+  e("div",{style:{marginTop:"10px", display:"flex", justifyContent:"center", gap:"10px", flexWrap:"wrap"}},
+    // Play/Pause (ambient) if music_type present
+    (quote.music_type && quote.music_type !== "") ? e("button",{
+        className:"secondary",
+        onClick:()=>playMusic(quote.music_type || "")
+      },
+        (isMusicPlaying && (audioRef.current.type === (quote.music_type || "")))
+          ? (currentLang==="en" ? "Pause" : (currentLang==="zh-CN" ? "暂停" : "暫停"))
+          : (currentLang==="en" ? "Play" : (currentLang==="zh-CN" ? "播放" : "播放"))
+      ) : null,
+
+    // Open Link if music_url present
+    (quote.music_url && quote.music_url !== "") ? e("button",{
+        className:"secondary",
+        onClick:()=>{ const url = quote.music_url || ""; const ok = playLinkAudio(url); if (!ok){ const opened = openMusicUrl(url); if (!opened) playMusic(quote.music_type || ""); } }
+      },
+        (currentLang==="en" ? "Open link" : (currentLang==="zh-CN" ? "打开链接" : "開啟連結"))
+      ) : null
+  ),
+
+  // Status line
+  e("div",{style:{marginTop:"8px", fontSize:"11px", color:"#888", letterSpacing:".12em", textAlign:"center"}},
+    (quote.music_url && quote.music_url !== "") 
+      ? (currentLang==="en" ? "Tip: open in a new tab" : (currentLang==="zh-CN" ? "提示：新标签页打开" : "提示：會在新分頁開啟"))
+      : ((isMusicPlaying && (audioRef.current.type === (quote.music_type || "")))
+          ? ((currentLang==="en" ? "Now playing" : (currentLang==="zh-CN" ? "正在播放" : "正在播放")) + " · " + (quote.music_type||""))
+          : (currentLang==="en" ? "Tap Play to start" : (currentLang==="zh-CN" ? "点播放开始" : "點播放開始"))
+        )
+  )
+) : null,e("div",{className:"rx-foot"},"CAT MASTER RECIPE")
+            ),
+            e("div",{className:"actions"},
+              e("button",{onClick:nextQuote}, t("again")),
+              e("button",{className:"secondary", onClick:()=>setStep("state")}, t("changeState"))
+            )
+          ) : null
+        ),
+        e("div",{className:"toast"+(toast? " show": "")}, toast),
+        e("audio",{ref:linkAudioRef, preload:"none", style:{display:"none"}, onEnded:()=>setIsLinkPlaying(false), onPause:()=>setIsLinkPlaying(false), onPlay:()=>setIsLinkPlaying(true)}),
+        e(BreathingModal, null)
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(e(App));
+  </script>
+</body>
+</html>
