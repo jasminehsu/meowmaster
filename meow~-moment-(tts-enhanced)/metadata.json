@@ -1,0 +1,7 @@
+{
+  "name": "Meow~ Moment (TTS Enhanced)",
+  "description": "A tranquil 3-minute cat-guided mindfulness app featuring wisdom quotes and AI-powered text-to-speech from the Cat Master.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
