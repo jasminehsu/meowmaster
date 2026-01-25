@@ -379,9 +379,14 @@
       font-size:14px; color:#444;
       animation: breathe 14s ease-in-out infinite;
     }
-    @keyframes breathe{
-  /* 4–4–6 (14s) */
+    
+@keyframes breathe {
   0%   { transform: scale(.85); }
+  30%  { transform: scale(1); }
+  60%  { transform: scale(1); }
+  100% { transform: scale(.85); }
+}
+
   28.57% { transform: scale(1); }   /* inhale */
   57.14% { transform: scale(1); }   /* hold */
   100% { transform: scale(.85); }   /* exhale back */
@@ -417,7 +422,10 @@
     const useEffect = React.useEffect;
 const useRef = React.useRef;
 
-    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQgM32Z8vofJ3TD8T8UYu21Rxej4r7SAPVaJq0SrV-sfOQ-CjJS7_7XOZ8yxahiLX40KqLENyVW-pq0/pub?output=csv";
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1-Wt1qhqS9psrgzv8HgM_QUPT4LIMKp4DARZU1oav0Lo/edit?usp=sharing";
+    // Google Apps Script Web App URL for Text-to-Speech (deploy as "Anyone")
+    // Example: https://script.google.com/macros/s/XXXXX/exec
+    const GOOGLE_TTS_PROXY_URL = "https://script.google.com/macros/s/AKfycbyHwBCVsqFhWrBPMpoUViG_t5_aEq98_VmvUXM07Mc2zECek3t45l7zBay2UA-5gszSrw/exec";
     const UI_TEXT = {
       "zh-TW": {
         appTitle: "喵～時刻",
@@ -443,7 +451,12 @@ const useRef = React.useRef;
         remove: "移除",
         copy: "複製",
         lang: "語言"
-      },
+      ,
+        listenRx: "🎙️ 讓貓大師唸給你聽",
+        listenRxSub: "點一下，貓會用聲音把處方唸出來",
+        listenRxLoading: "生成語音中…",
+        listenRxError: "語音生成失敗"
+},
       "zh-CN": {
         appTitle: "喵～时刻",
         appSubtitle: "给忙碌心灵的 3 分钟猫语录",
@@ -468,7 +481,12 @@ const useRef = React.useRef;
         remove: "移除",
         copy: "复制",
         lang: "语言"
-      },
+      ,
+        listenRx: "🎙️ 让猫大师念给你听",
+        listenRxSub: "点一下，猫会用声音把处方念出来",
+        listenRxLoading: "生成语音中…",
+        listenRxError: "语音生成失败"
+},
       "en": {
         appTitle: "Meow~ Moment",
         appSubtitle: "3-minute cat quotes for busy minds",
@@ -493,7 +511,12 @@ const useRef = React.useRef;
         remove: "Remove",
         copy: "Copy",
         lang: "Language"
-      }
+      ,
+        listenRx: "🎙️ Let the Cat Master read it",
+        listenRxSub: "Tap to hear the prescription out loud",
+        listenRxLoading: "Generating audio…",
+        listenRxError: "Audio generation failed"
+}
     };
  // Phase F: 先預留（之後貼上 export?format=csv）
 
@@ -688,25 +711,52 @@ function parseCSV(text){
       const idx = (name) => header.indexOf(name);
 
       const iScenario = idx("scenarioIds");
-      const iMain = idx("main_tw");
-      const iAction = idx("action_tw");
-      const iAuthor = idx("author_tw");
 
+      // Quote / RX fields (support trilingual; fallback to _tw)
+      const iMainTW = idx("main_tw");
+      const iMainCN = idx("main_cn");
+      const iMainEN = idx("main_en");
+
+      const iActionTW = idx("action_tw");
+      const iActionCN = idx("action_cn");
+      const iActionEN = idx("action_en");
+
+      const iAuthorTW = idx("author_tw");
+      const iAuthorCN = idx("author_cn");
+      const iAuthorEN = idx("author_en");
+
+      // Music fields
       const iMusicType = idx("music_type");
       const iMusicHintTW = idx("music_hint_tw");
       const iMusicHintCN = idx("music_hint_cn");
       const iMusicHintEN = idx("music_hint_en");
       const iMusicUrl = idx("music_url");
-      if (iMain === -1) return null;
+
+      if (iMainTW === -1 && iMainCN === -1 && iMainEN === -1) return null;
 
       const out = { start:[], conflict:[], win:[], tired:[], push:[] };
 
+      const pickTri = (cols, iTW, iCN, iEN) => {
+        const tw = iTW === -1 ? "" : (cols[iTW] || "").trim();
+        const cn = iCN === -1 ? "" : (cols[iCN] || "").trim();
+        const en = iEN === -1 ? "" : (cols[iEN] || "").trim();
+        // If only TW is provided, return string (keeps existing behavior)
+        if ((cn || en)) return { "zh-TW": tw, "zh-CN": cn || tw, "en": en || tw };
+        return tw;
+      };
+
       for (let r=1;r<rows.length;r++){
         const cols = rows[r];
-        const main = (cols[iMain] || "").trim();
-        if (!main) continue;
-        const action = iAction === -1 ? "" : (cols[iAction] || "").trim();
-        const author = iAuthor === -1 ? "" : (cols[iAuthor] || "").trim();
+
+        const main = pickTri(cols, iMainTW, iMainCN, iMainEN);
+        const hasMain = (typeof main === "string")
+          ? !!main.trim()
+          : !!((main["zh-TW"]||"").trim() || (main["zh-CN"]||"").trim() || (main["en"]||"").trim());
+        if (!hasMain) continue;
+
+        const action = pickTri(cols, iActionTW, iActionCN, iActionEN);
+        const author = pickTri(cols, iAuthorTW, iAuthorCN, iAuthorEN);
+
         const scenarioIds = iScenario === -1 ? [] : (cols[iScenario] || "").split(",").map(s=>s.trim()).filter(Boolean);
 
         const musicType = iMusicType === -1 ? "" : (cols[iMusicType] || "").trim();
@@ -717,7 +767,14 @@ function parseCSV(text){
         };
         const musicUrl = iMusicUrl === -1 ? "" : (cols[iMusicUrl] || "").trim();
 
-        const item = { main, action, author: author || "貓大師", music_type: musicType, music_hint: musicHint, music_url: musicUrl };
+        const item = {
+          main,
+          action,
+          author: author || (typeof author === "string" ? "貓大師" : {"zh-TW":"貓大師","zh-CN":"猫大师","en":"Cat Master"}),
+          music_type: musicType,
+          music_hint: musicHint,
+          music_url: musicUrl
+        };
 
         if (!scenarioIds.length){
           Object.keys(out).forEach(k => out[k].push(item));
@@ -771,9 +828,9 @@ function completeOnboarding(){
 }
 
 const CAT_THEMES = {
-  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"./icons/classic/gentle.svg", focus:"./icons/classic/focus.svg", wise:"./icons/classic/wise.svg", rest:"./icons/classic/rest.svg" } },
-  night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"./icons/night/gentle.svg", focus:"./icons/night/focus.svg", wise:"./icons/night/wise.svg", rest:"./icons/night/rest.svg" } },
-  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"/icons/candy/gentle.svg", focus:"./icons/candy/focus.svg", wise:"./icons/candy/wise.svg", rest:"./icons/candy/rest.svg" } }
+  classic: { label:{ "zh-TW":"經典","zh-CN":"经典","en":"Classic" }, icons:{ gentle:"/icons/classic/gentle.svg", focus:"/icons/classic/focus.svg", wise:"/icons/classic/wise.svg", rest:"/icons/classic/rest.svg" } },
+  night:   { label:{ "zh-TW":"夜行","zh-CN":"夜行","en":"Night" },    icons:{ gentle:"/icons/night/gentle.svg", focus:"/icons/night/focus.svg", wise:"/icons/night/wise.svg", rest:"/icons/night/rest.svg" } },
+  candy:   { label:{ "zh-TW":"糖果","zh-CN":"糖果","en":"Candy" },    icons:{ gentle:"/icons/candy/gentle.svg", focus:"/icons/candy/focus.svg", wise:"/icons/candy/wise.svg", rest:"/icons/candy/rest.svg" } }
 };
 const [catTheme, setCatTheme] = useState(()=>{ try { return localStorage.getItem("meow_cat_theme") || "classic"; } catch(e){ return "classic"; }});
 const [showTheme, setShowTheme] = useState(false);
@@ -797,11 +854,46 @@ const audioRef = useRef({ ctx: null, stop: null, type: null });
 
 const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
+      // TTS (Cat reads prescription)
+      const ttsAudioRef = useRef(null);
+      const [isTtsLoading, setIsTtsLoading] = useState(false);
+
 function stopMusic(){
   const a = audioRef.current;
   try { if (a.stop) a.stop(); } catch(e){}
   a.stop = null; a.type = null;
   setIsMusicPlaying(false);
+}
+
+async function speakPrescription(text){
+  if (!text) return;
+  if (!GOOGLE_TTS_PROXY_URL){
+    showToast(currentLang==="en" ? "Set GOOGLE_TTS_PROXY_URL first" : (currentLang==="zh-CN" ? "请先设定 GOOGLE_TTS_PROXY_URL" : "請先設定 GOOGLE_TTS_PROXY_URL"));
+    return;
+  }
+  try{
+    setIsTtsLoading(true);
+    // Avoid CORS preflight by using text/plain
+    const res = await fetch(GOOGLE_TTS_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ text, lang: (currentLang==="en" ? "en-US" : (currentLang==="zh-CN" ? "zh-CN" : "zh-TW")) })
+    });
+    const raw = await res.text();
+    const data = JSON.parse(raw);
+    if (!data || !data.audioContent) throw new Error("no audioContent");
+    if (ttsAudioRef.current){
+      try{ ttsAudioRef.current.pause(); }catch(e){}
+      ttsAudioRef.current = null;
+    }
+    const audio = new Audio("data:audio/mp3;base64," + data.audioContent);
+    ttsAudioRef.current = audio;
+    audio.play();
+  }catch(e){
+    showToast(t("listenRxError"));
+  }finally{
+    setIsTtsLoading(false);
+  }
 }
 
 function ensureCtx(){
@@ -1308,9 +1400,19 @@ const [fishCount, setFishCount] = useState(()=>{
                 e("span",null,"RX-"+String(rxNo).padStart(4,"0")),
                 e("span",null,new Date().toLocaleDateString("zh-TW"))
               ),
-              e("div",{className:"rx-body"},
+              e("div",{className:"rx-body", id:"rx-text"},
                 quote && quote.action ? getText(quote.action) : t("rxMissing")
               ),
+
+e("div",{"data-testid":"tts-read", style:{marginTop:"12px", textAlign:"center"}}, 
+  e("button",{
+    className:"secondary",
+    disabled: isTtsLoading,
+    onClick: ()=> speakPrescription(quote && quote.action ? getText(quote.action) : ""),
+    style:{display:"inline-flex", alignItems:"center", justifyContent:"center", gap:"8px"}
+  }, isTtsLoading ? t("listenRxLoading") : t("listenRx")),
+  e("div",{style:{marginTop:"6px", fontSize:"12px", color:"#666", lineHeight:"1.6"}}, t("listenRxSub"))
+),
               (true && ((quote.music_type && quote.music_type !== "") || (quote.music_hint && getText(quote.music_hint)) || (quote.music_url && quote.music_url !== ""))) ? e("div",{style:{marginTop:"14px"}},
   e("div",{style:{textAlign:"center", fontSize:"12px", color:"#7d7d7d", letterSpacing:".14em"}},
     "🎧 ",
