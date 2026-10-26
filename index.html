@@ -150,7 +150,7 @@
     shareBonus: 2,        // 分享圖卡（每天一次）
     feedCost: 1,          // 放 1 條小魚到食盆
     bowlMax: 3,           // 食盆最多放幾條
-    visitMinMin: 1, visitMaxMin: 3,     // 貓多久會來（分鐘）
+    arriveMs: 1500,      // 放完小魚後，貓多久出現（毫秒）
     maxVisitors: 3        // 院子最多同時幾隻
   };
   // 道具：有些貓只有看到特定道具才會來
@@ -285,8 +285,7 @@
           const legacy = { fish: readLocal("meow_fish", 0), seen: readLocal("meow_seen_facts", []), favs: (readLocal("meow_fav_facts", [])||[]).map(f=>f.id), adopted: [] };
           s = merge(s, merge(readLocal("meow_state", EMPTY), legacy));
           // 縮短等待時間後，把之前排得比較晚的貓提前到新的時間範圍內
-          const latest = Date.now() + RULES.visitMaxMin*60000;
-          s = { ...s, visits: s.visits.map(v=> v.at > latest ? { ...v, at: Date.now() + (RULES.visitMinMin + Math.random()*(RULES.visitMaxMin-RULES.visitMinMin))*60000 } : v) };
+          s = { ...s, visits: s.visits.map(v=> v.at > Date.now() ? { ...v, at: Date.now() } : v) };
           stRef.current = s; setSt(s); setSync("已存到雲端 ✓");
           await persist(u, s);
         }catch(err){ console.error(err); setSync("雲端讀取失敗，先用這台裝置的進度"); setSt(normalize(readLocal("meow_state", EMPTY))); }
@@ -322,15 +321,14 @@
     function feed(){
       if (!st) return;
       if (st.fish < RULES.feedCost){ say("小魚不夠了，明天再來領吧"); return; }
-      if (pending.length >= RULES.bowlMax){ say(`食盆滿了（最多 ${RULES.bowlMax} 條），等貓來吃吧`); return; }
+      if (pending.length + arrived.length >= RULES.maxVisitors){ say(`院子裡已經有 ${RULES.maxVisitors} 隻貓了，先跟牠們玩吧`); return; }
       update(s=>{
         const taken = s.visits.map(v=>v.cat);
         const cat = pickCat(s, taken) || pickCat(s, []);
-        const gap = (RULES.visitMinMin + Math.random()*(RULES.visitMaxMin-RULES.visitMinMin)) * 60000;
-        const at = Math.round(Date.now() + gap);
+        const at = Date.now() + RULES.arriveMs;
         return { ...s, fish:s.fish-RULES.feedCost, visits:[...s.visits, { id:String(Date.now()), cat, at }] };
       });
-      say("放好了！過一陣子再回來看看誰來了 🐾");
+      say("放好了！有貓聞到味道了… 🐾"); setTimeout(()=>setNow(Date.now()), RULES.arriveMs + 50);
     }
     function buy(key){
       const it = ITEMS[key]; if (!st || st.items.includes(key)) return;
@@ -417,8 +415,8 @@
     else if (view==="yard"){
       let status;
       if (arrived.length) status = `有 ${arrived.length} 隻貓來了！點牠，猜猜牠在說什麼`;
-      else if (pending.length) status = `食盆裡有 ${pending.length} 條小魚，貓咪在路上了…（最快大約 ${minsText(Math.min(...pending.map(v=>v.at))-now)}）`;
-      else status = `點食盆放 1 條小魚，${RULES.visitMinMin}–${RULES.visitMaxMin} 分鐘後會有貓來`;
+      else if (pending.length) status = "有貓聞到味道了，正在走過來…";
+      else status = "點食盆放 1 條小魚，馬上會有貓來";
       body = e("div",null,
         e("div",{className:"yard"},
           Object.entries(ITEMS).filter(([k])=>st.items.includes(k)).map(([k,it])=> e("img",{key:k, className:"item", src:`./yard/${k}.webp`, alt:it.name, style:it.pos})),
