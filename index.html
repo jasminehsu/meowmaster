@@ -77,6 +77,34 @@
     .fav .b{ font-size:12px; color:var(--accent); font-weight:700; letter-spacing:.08em; }
     .fav .s{ margin-top:4px; font-size:14px; line-height:1.5; }
 
+    /* Yard */
+    .yard{ position:relative; width:100%; aspect-ratio:1136/1408; border-radius:24px; overflow:hidden; background:#efe7da url(./yard/yard.webp) center/cover no-repeat; margin-top:16px; box-shadow:0 14px 34px rgba(0,0,0,.08); }
+    .yard img{ position:absolute; display:block; height:auto; }
+    .yard .item{ pointer-events:none; filter:drop-shadow(0 6px 8px rgba(0,0,0,.08)); }
+    .yard .bowl{ left:50%; bottom:6%; width:24%; transform:translateX(-50%); cursor:pointer; filter:drop-shadow(0 6px 8px rgba(0,0,0,.10)); }
+    .yard .visitor{ width:30%; transform:translateX(-50%); cursor:pointer; filter:drop-shadow(0 8px 10px rgba(0,0,0,.12)); animation:pop .5s ease-out; }
+    .yard .visitor.friend::after{ content:""; }
+    @keyframes pop{ from{ opacity:0; transform:translateX(-50%) translateY(10px) scale(.9);} to{ opacity:1; transform:translateX(-50%);} }
+    .bubble-tag{ position:absolute; transform:translate(-50%,-100%); background:#fff; border-radius:999px; padding:4px 10px; font-size:12px; color:#8a6a50; box-shadow:0 4px 10px rgba(0,0,0,.08); white-space:nowrap; pointer-events:none; }
+    .bowl-tag{ position:absolute; left:50%; bottom:1.5%; transform:translateX(-50%); background:rgba(255,255,255,.92); border-radius:999px; padding:5px 12px; font-size:12px; color:#555; white-space:nowrap; }
+    .status{ margin-top:12px; text-align:center; font-size:14px; color:#6f6a62; line-height:1.7; }
+    .shop{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; }
+    .shop .it{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:8px 4px; text-align:center; font-size:12px; color:#444; cursor:pointer; }
+    .shop .it img{ width:70%; aspect-ratio:1/1; object-fit:contain; }
+    .shop .it.own{ background:#f6f1e8; color:#9a9a9a; cursor:default; }
+    .shop .it .c{ color:#8a6a50; margin-top:2px; }
+    /* Modal */
+    .modal-bg{ position:fixed; inset:0; background:rgba(0,0,0,.28); z-index:90; display:flex; align-items:flex-end; justify-content:center; }
+    .modal{ background:#fff; width:min(620px,100%); max-height:92vh; overflow:auto; border-radius:28px 28px 0 0; padding:22px 20px 28px; }
+    @media (min-width:700px){ .modal-bg{ align-items:center; } .modal{ border-radius:28px; } }
+    .cue{ text-align:center; font-size:15px; color:#444; line-height:1.7; margin-top:8px; }
+    .q{ text-align:center; font-size:13px; color:#8a8a8a; letter-spacing:.12em; margin-top:14px; }
+    .opts{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+    .opt{ text-align:left; background:#faf8f4; color:#222; border:1px solid var(--line); border-radius:16px; padding:14px 16px; font-size:16px; line-height:1.5; }
+    .opt:disabled{ opacity:1; cursor:default; }
+    .opt.right{ background:#eef6ea; border-color:#a9cf9b; }
+    .opt.wrong{ background:#fbeeee; border-color:#e4b1b1; }
+    .verdict{ text-align:center; margin-top:16px; font-size:17px; font-weight:700; }
     .sync{ text-align:center; font-size:11px; color:#a09a90; margin-top:18px; letter-spacing:.08em; }
     .toast{ position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:rgba(30,30,30,.92); color:#fff; padding:10px 16px; border-radius:999px; font-size:13px; z-index:120; opacity:0; transition:opacity .2s; pointer-events:none; max-width:90vw; text-align:center; }
     .toast.show{ opacity:1; }
@@ -115,7 +143,25 @@
   const { useState, useEffect, useRef } = React;
 
   // ---- 遊戲規則（要調整數字改這裡就好）----
-  const RULES = { dailyBonus: 3, newFact: 1, shareBonus: 2, adoptCost: 5 };
+  const RULES = {
+    dailyBonus: 3,        // 每天第一次來
+    correct: 2,           // 猜對貓語
+    friendVisit: 1,       // 老朋友來玩
+    shareBonus: 2,        // 分享圖卡（每天一次）
+    feedCost: 1,          // 放 1 條小魚到食盆
+    bowlMax: 3,           // 食盆最多放幾條
+    visitMinMin: 10, visitMaxMin: 30,   // 貓多久會來（分鐘）
+    maxVisitors: 3        // 院子最多同時幾隻
+  };
+  // 道具：有些貓只有看到特定道具才會來
+  const ITEMS = {
+    box:     { name:"紙箱",   cost:8,  cat:17, pos:{left:"4%",  bottom:"20%", width:"28%"} },
+    blanket: { name:"毛毯",   cost:10, cat:3,  pos:{right:"3%", bottom:"5%",  width:"28%"} },
+    post:    { name:"貓抓柱", cost:12, cat:16, pos:{left:"3%",  bottom:"44%", width:"17%"} },
+    wand:    { name:"逗貓棒", cost:15, cat:6,  pos:{right:"4%", bottom:"38%", width:"24%"} }
+  };
+  const NEEDS = Object.fromEntries(Object.entries(ITEMS).map(([k,v])=>[String(v.cat), k]));
+  const SLOTS = [ {left:"24%", bottom:"20%"}, {left:"76%", bottom:"24%"}, {left:"52%", bottom:"46%"} ];
 
   // ---- 20 隻貓：編號 = 貓語編號 ----
   const CAT_FILES = {1:"01-slow-blink",2:"02-tail-up",3:"03-kneading",4:"04-leg-rub",5:"05-belly-up",6:"06-chattering",7:"07-bring-prey",8:"08-airplane-ears",9:"09-purring",10:"10-tail-lashing",11:"11-food-purr",12:"12-meowing",13:"13-name-ear",14:"14-zoomies",15:"15-flehmen",16:"16-scratching",17:"17-box",18:"18-tape-square",19:"19-licking",20:"20-trill"};
@@ -128,9 +174,11 @@
   function writeLocal(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} }
   const uniq = a => Array.from(new Set((a||[]).map(String)));
 
-  const EMPTY = { fish:0, seen:[], favs:[], adopted:[], lastDaily:"", lastShare:"" };
-  function normalize(s){ s = s || {}; return { fish: Number(s.fish)||0, seen: uniq(s.seen), favs: uniq(s.favs), adopted: uniq(s.adopted), lastDaily: s.lastDaily||"", lastShare: s.lastShare||"" }; }
-  function merge(a, b){ a=normalize(a); b=normalize(b); return { fish: Math.max(a.fish,b.fish), seen: uniq([...a.seen,...b.seen]), favs: uniq([...a.favs,...b.favs]), adopted: uniq([...a.adopted,...b.adopted]), lastDaily: a.lastDaily>b.lastDaily?a.lastDaily:b.lastDaily, lastShare: a.lastShare>b.lastShare?a.lastShare:b.lastShare }; }
+  const EMPTY = { fish:0, seen:[], favs:[], adopted:[], items:[], bowl:0, visits:[], lastDaily:"", lastShare:"" };
+  function normalize(s){ s = s || {}; return { fish: Number(s.fish)||0, seen: uniq(s.seen), favs: uniq(s.favs), adopted: uniq(s.adopted), items: uniq(s.items), bowl: Math.max(0, Number(s.bowl)||0),
+    visits: Array.isArray(s.visits) ? s.visits.filter(v=>v && v.cat && v.at).map(v=>({ id:String(v.id||v.at), cat:String(v.cat), at:Number(v.at) })) : [],
+    lastDaily: s.lastDaily||"", lastShare: s.lastShare||"" }; }
+  function merge(a, b){ a=normalize(a); b=normalize(b); return { fish: Math.max(a.fish,b.fish), seen: uniq([...a.seen,...b.seen]), favs: uniq([...a.favs,...b.favs]), adopted: uniq([...a.adopted,...b.adopted]), items: uniq([...a.items,...b.items]), bowl: Math.max(a.bowl,b.bowl), visits: a.visits.length>=b.visits.length ? a.visits : b.visits, lastDaily: a.lastDaily>b.lastDaily?a.lastDaily:b.lastDaily, lastShare: a.lastShare>b.lastShare?a.lastShare:b.lastShare }; }
 
   function Icon(name){
     const p = { viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:1.6, strokeLinecap:"round", strokeLinejoin:"round" };
@@ -178,23 +226,48 @@
     return new Promise(ok=>c.toBlob(ok,"image/png"));
   }
 
+  // 依「放小魚的時間」安排來訪：每條小魚 = 一隻貓，在 10–30 分鐘內陸續抵達
+  function pickCat(st, exclude){
+    const pool = [];
+    for (let id=1; id<=20; id++){
+      const k = String(id);
+      if (exclude.includes(k)) continue;
+      const need = NEEDS[k];
+      if (need && !st.items.includes(need)) continue;           // 沒有對應道具，這隻不會來
+      const w = st.adopted.includes(k) ? 1 : (need ? 6 : 3);     // 還不認識的貓比較常來；道具貓更容易被吸引
+      for (let i=0;i<w;i++) pool.push(k);
+    }
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+  function shuffleSeeded(arr, seed){
+    let s = 0; for (const ch of String(seed)) s = (s*31 + ch.charCodeAt(0)) >>> 0;
+    const a = arr.slice();
+    for (let i=a.length-1;i>0;i--){ s = (s*1103515245 + 12345) >>> 0; const j = s % (i+1); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+  function minsText(ms){ const m = Math.max(1, Math.round(ms/60000)); return `${m} 分鐘`; }
+
   function App(){
     const [facts, setFacts] = useState(null);
     const [loadErr, setLoadErr] = useState(false);
-    const [user, setUser] = useState(null);           // Firebase 使用者
-    const [st, setSt] = useState(null);               // 雲端存檔內容
-    const [sync, setSync] = useState("連線中…");       // 存檔狀態
-    const [view, setView] = useState("today");
-    const [offset, setOffset] = useState(0);
+    const [user, setUser] = useState(null);
+    const [st, setSt] = useState(null);
+    const [sync, setSync] = useState("連線中…");
+    const [view, setView] = useState("yard");
+    const [now, setNow] = useState(Date.now());
+    const [quiz, setQuiz] = useState(null);      // { visit, picked }
+    const [detail, setDetail] = useState(null);  // 圖鑑點開的貓
     const [toast, setToast] = useState("");
-    const [reward, setReward] = useState("");
     const [busy, setBusy] = useState(false);
     const saveTimer = useRef(null);
     const stRef = useRef(null);
 
-    function say(m){ setToast(m); clearTimeout(say._t); say._t = setTimeout(()=>setToast(""), 2200); }
+    function say(m){ setToast(m); clearTimeout(say._t); say._t = setTimeout(()=>setToast(""), 2400); }
+    const factOf = id => facts && facts.find(f=>String(f.id)===String(id));
 
-    // 載入貓語
+    useEffect(()=>{ const t = setInterval(()=>setNow(Date.now()), 15000); return ()=>clearInterval(t); }, []);
+    useEffect(()=>{ const f = ()=>setNow(Date.now()); document.addEventListener("visibilitychange", f); return ()=>document.removeEventListener("visibilitychange", f); }, []);
+
     useEffect(()=>{
       fetch("./facts.json?v=" + twDate(), { cache:"no-store" })
         .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
@@ -202,7 +275,6 @@
         .catch(()=> setLoadErr(true));
     }, []);
 
-    // 登入（匿名）→ 讀雲端存檔
     useEffect(()=>{
       const off = onAuthStateChanged(auth, async u=>{
         if (!u){ try{ await signInAnonymously(auth); }catch(err){ setSync("無法連線，進度暫存在這台裝置"); setSt(normalize(readLocal("meow_state", EMPTY))); } return; }
@@ -210,10 +282,9 @@
         try{
           const snap = await getDoc(doc(db, "users", u.uid));
           let s = snap.exists() ? normalize(snap.data()) : EMPTY;
-          // 第一次用：把舊版存在這台裝置的進度帶過來
           const legacy = { fish: readLocal("meow_fish", 0), seen: readLocal("meow_seen_facts", []), favs: (readLocal("meow_fav_facts", [])||[]).map(f=>f.id), adopted: [] };
           s = merge(s, merge(readLocal("meow_state", EMPTY), legacy));
-          setSt(s); setSync("已存到雲端 ✓");
+          stRef.current = s; setSt(s); setSync("已存到雲端 ✓");
           await persist(u, s);
         }catch(err){ console.error(err); setSync("雲端讀取失敗，先用這台裝置的進度"); setSt(normalize(readLocal("meow_state", EMPTY))); }
       });
@@ -226,7 +297,6 @@
       try{ await setDoc(doc(db, "users", u.uid), { ...s, updatedAt: serverTimestamp() }); setSync("已存到雲端 ✓"); }
       catch(err){ console.error(err); setSync("⚠ 雲端存檔失敗，已先存在這台裝置"); }
     }
-    // 每次進度變動就存（0.6 秒內合併成一次）
     function update(fn){
       setSt(prev=>{
         const next = normalize(fn(prev));
@@ -236,81 +306,87 @@
       });
     }
 
-    // 每日第一次打開 +3
     useEffect(()=>{
       if (!st) return;
       const today = twDate();
       if (st.lastDaily !== today){ update(s=>({ ...s, fish:s.fish+RULES.dailyBonus, lastDaily:today })); say(`今天第一次來，送你 ${RULES.dailyBonus} 條小魚 🐟`); }
     }, [!!st]);
 
-    const idx = facts && facts.length ? (((dayNumber() + offset) % facts.length) + facts.length) % facts.length : 0;
-    const fact = facts && facts.length ? facts[idx] : null;
+    // ---- 院子 ----
+    const arrived = st ? st.visits.filter(v=>v.at<=now).slice(0, RULES.maxVisitors) : [];
+    const pending = st ? st.visits.filter(v=>v.at>now) : [];
 
-    // 第一次讀到 → +1
-    useEffect(()=>{
-      if (!fact || !st) return;
-      const id = String(fact.id);
-      if (!st.seen.includes(id)){ update(s=>({ ...s, seen:[...s.seen, id], fish:s.fish+RULES.newFact })); setReward(`讀到新的貓語，獲得 ${RULES.newFact} 條小魚 🐟`); }
-      else setReward("");
-    }, [fact && fact.id, !!st]);
+    function feed(){
+      if (!st) return;
+      if (st.fish < RULES.feedCost){ say("小魚不夠了，明天再來領吧"); return; }
+      if (pending.length >= RULES.bowlMax){ say(`食盆滿了（最多 ${RULES.bowlMax} 條），等貓來吃吧`); return; }
+      update(s=>{
+        const taken = s.visits.map(v=>v.cat);
+        const cat = pickCat(s, taken) || pickCat(s, []);
+        const gap = (RULES.visitMinMin + Math.random()*(RULES.visitMaxMin-RULES.visitMinMin)) * 60000;
+        const at = Math.round(Date.now() + gap);
+        return { ...s, fish:s.fish-RULES.feedCost, visits:[...s.visits, { id:String(Date.now()), cat, at }] };
+      });
+      say("放好了！過一陣子再回來看看誰來了 🐾");
+    }
+    function buy(key){
+      const it = ITEMS[key]; if (!st || st.items.includes(key)) return;
+      if (st.fish < it.cost){ say(`還差 ${it.cost - st.fish} 條小魚`); return; }
+      update(s=>({ ...s, fish:s.fish-it.cost, items:[...s.items, key] }));
+      say(`${it.name}放好了，說不定會吸引特別的貓喔`);
+    }
+    function openVisitor(v){
+      const f = factOf(v.cat); if (!f) return;
+      if (st.adopted.includes(v.cat)){
+        // 老朋友：直接打招呼
+        update(s=>({ ...s, fish:s.fish+RULES.friendVisit, visits:s.visits.filter(x=>x.id!==v.id) }));
+        setDetail({ id:v.cat, greet:true });
+        return;
+      }
+      setQuiz({ visit:v, picked:null, options: shuffleSeeded([f.catSays, ...(f.wrong||[])], v.id) });
+    }
+    function answer(opt){
+      if (!quiz || quiz.picked) return;
+      const f = factOf(quiz.visit.cat); const ok = opt === f.catSays; const id = quiz.visit.cat;
+      setQuiz({ ...quiz, picked:opt, ok });
+      update(s=>({ ...s,
+        visits: s.visits.filter(x=>x.id!==quiz.visit.id),
+        seen: uniq([...s.seen, id]),
+        adopted: ok ? uniq([...s.adopted, id]) : s.adopted,
+        fish: s.fish + (ok ? RULES.correct : 0) }));
+    }
 
     async function linkGoogle(){
       const provider = new GoogleAuthProvider();
-      try{
-        await linkWithPopup(auth.currentUser, provider);
-        setUser({ ...auth.currentUser }); say("已用 Google 綁定，換手機也找得回進度");
-      }catch(err){
+      try{ await linkWithPopup(auth.currentUser, provider); setUser({ ...auth.currentUser }); say("已用 Google 綁定，換手機也找得回進度"); }
+      catch(err){
         if (err.code === "auth/credential-already-in-use"){
-          // 這個 Google 帳號之前用過：切換過去，並把兩邊進度合併
-          const cred = GoogleAuthProvider.credentialFromError(err);
-          const local = stRef.current || st;
-          const res = await signInWithCredential(auth, cred);
-          const snap = await getDoc(doc(db, "users", res.user.uid));
+          const cred = GoogleAuthProvider.credentialFromError(err); const local = stRef.current || st;
+          const res = await signInWithCredential(auth, cred); const snap = await getDoc(doc(db, "users", res.user.uid));
           const merged = merge(snap.exists() ? snap.data() : EMPTY, local);
-          setUser(res.user); setSt(merged); stRef.current = merged; await persist(res.user, merged);
-          say("已切換到你的 Google 帳號，進度已合併");
-        } else if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request"){
-          console.error(err); say("綁定失敗：" + (err.code || "請再試一次"));
-        }
+          setUser(res.user); setSt(merged); stRef.current = merged; await persist(res.user, merged); say("已切換到你的 Google 帳號，進度已合併");
+        } else if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request"){ console.error(err); say("綁定失敗：" + (err.code || "請再試一次")); }
       }
     }
-
-    function toggleFav(){
-      if (!fact) return; const id = String(fact.id);
-      update(s=> s.favs.includes(id) ? { ...s, favs:s.favs.filter(x=>x!==id) } : { ...s, favs:[id, ...s.favs] });
-    }
-    function adopt(id){
-      id = String(id);
-      if (!st || st.adopted.includes(id)) return;
-      if (!st.seen.includes(id)){ say("先讀過這隻貓的貓語，才能領養牠"); return; }
-      if (st.fish < RULES.adoptCost){ say(`還差 ${RULES.adoptCost - st.fish} 條小魚`); return; }
-      update(s=>({ ...s, fish:s.fish-RULES.adoptCost, adopted:[...s.adopted, id] }));
-      say(`領養成功！${CAT_COATS[id]}加入你的貓咪圖鑑 🐾`);
-    }
-    async function shareCard(){
-      if (!fact || busy) return; setBusy(true);
+    function toggleFav(id){ id = String(id); update(s=> s.favs.includes(id) ? { ...s, favs:s.favs.filter(x=>x!==id) } : { ...s, favs:[id, ...s.favs] }); }
+    async function shareCard(id){
+      const fact = factOf(id); if (!fact || busy) return; setBusy(true);
       try{
         const blob = await makeCard(fact);
         const file = new File([blob], `meow-${String(fact.id).padStart(2,"0")}.png`, { type:"image/png" });
-        let shared = false;
-        // 手機（含 iPad）才跳分享選單；電腦一律直接下載到「下載」資料夾
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
         if (isMobile && navigator.canShare && navigator.canShare({ files:[file] })){
-          await navigator.share({ files:[file], title:"今日貓語翻譯", text: fact.catSays + "\n— 喵～時刻 " + location.href.split("?")[0] }); shared = true;
+          await navigator.share({ files:[file], title:"今日貓語翻譯", text: fact.catSays + "\n— 喵～時刻 " + location.href.split("?")[0] });
         } else {
           const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
-          setTimeout(()=>URL.revokeObjectURL(a.href), 2000); say("圖卡已下載"); shared = true;
+          setTimeout(()=>URL.revokeObjectURL(a.href), 2000); say("圖卡已下載到「下載」資料夾");
         }
-        if (shared && st && st.lastShare !== twDate()){ update(s=>({ ...s, fish:s.fish+RULES.shareBonus, lastShare:twDate() })); setReward(`分享圖卡，獲得 ${RULES.shareBonus} 條小魚 🐟（每天一次）`); }
+        if (st && st.lastShare !== twDate()){ update(s=>({ ...s, fish:s.fish+RULES.shareBonus, lastShare:twDate() })); say(`分享圖卡，獲得 ${RULES.shareBonus} 條小魚 🐟（每天一次）`); }
       }catch(err){ if (err && err.name !== "AbortError") say("圖卡產生失敗，請再試一次"); }
       setBusy(false);
     }
-    function openFact(id){
-      if (!facts) return; const i = facts.findIndex(f=>String(f.id)===String(id));
-      if (i>=0) setOffset(((i - dayNumber()) % facts.length + facts.length) % facts.length);
-      setView("today"); window.scrollTo({top:0, behavior:"smooth"});
-    }
 
+    // ---- 畫面 ----
     const isAnon = !user || user.isAnonymous;
     const header = e("div",{className:"header"},
       e("div",{className:"header-inner"},
@@ -318,63 +394,108 @@
         e("div",{className:"h-actions"},
           e("div",{className:"badge", title:"小魚"}, Icon("fish"), e("b",null, st ? String(st.fish) : "–")),
           isAnon ? e("button",{className:"acct", onClick:linkGoogle, title:"綁定後換手機也找得回進度"}, "用 Google 保存進度")
-                 : e("span",{className:"acct done"}, "✓ 已綁定")
-        )
-      )
-    );
+                 : e("span",{className:"acct done"}, "✓ 已綁定"))));
     const tabs = e("div",{className:"tabs"},
-      [["today","今日貓語"],["dex",`貓咪圖鑑 ${st?st.adopted.length:0}/20`],["favs","收藏"]].map(([k,l])=>
+      [["yard","院子"],["dex",`貓咪圖鑑 ${st?st.adopted.length:0}/20`],["favs","收藏"]].map(([k,l])=>
         e("div",{key:k, className:"tab"+(view===k?" on":""), onClick:()=>setView(k)}, l)));
+
+    function FactBlock(f){
+      return e(React.Fragment,null,
+        e("div",{className:"behavior"}, f.behavior),
+        e("div",{className:"bubble"}, f.catSays),
+        e("div",{className:"truth-label"},"真相"),
+        e("div",{className:"truth"}, f.explain),
+        e("div",{className:"source"}, "資料來源：", f.sourceUrl ? e("a",{href:f.sourceUrl, target:"_blank", rel:"noopener"}, f.sourceName) : f.sourceName));
+    }
 
     let body;
     if (loadErr) body = e("div",{className:"card"}, e("p",null,"貓語載入失敗，請重新整理再試一次。"));
-    else if (!fact || !st) body = e("div",{className:"card"}, e("p",{style:{color:"#888"}},"貓咪準備中…"));
-    else if (view==="today"){
-      const id = String(fact.id); const adopted = st.adopted.includes(id); const isFav = st.favs.includes(id);
-      body = e("div",{className:"card"},
-        e("div",{className:"eyebrow"}, e("span",null, offset===0 ? "🐾 今日貓語翻譯" : "🐾 更多貓語翻譯"), e("span",null, `${st.seen.length} / ${facts.length} 已讀`)),
-        e("img",{className:"catpic", src:catSrc(id), alt:`${CAT_COATS[id]}，${fact.behavior}`}),
-        e("div",{className:"behavior"}, fact.behavior),
-        e("div",{className:"bubble"}, fact.catSays),
-        e("div",{className:"truth-label"},"真相"),
-        e("div",{className:"truth"}, fact.explain),
-        e("div",{className:"source"}, "資料來源：", fact.sourceUrl ? e("a",{href:fact.sourceUrl, target:"_blank", rel:"noopener"}, fact.sourceName) : fact.sourceName),
-        e("div",{className:"adopt-row"},
-          adopted ? `✓ 這隻${CAT_COATS[id]}已經在你的圖鑑裡`
-                  : e("button",{className:"adopt", onClick:()=>adopt(id), disabled: st.fish < RULES.adoptCost}, Icon("paw"), `領養這隻${CAT_COATS[id]}（🐟${RULES.adoptCost}）`)),
-        e("div",{className:"actions"},
-          e("button",{className:"secondary", onClick:toggleFav}, Icon(isFav?"heartFill":"heart"), isFav?"已收藏":"收藏"),
-          e("button",{className:"secondary", onClick:shareCard, disabled:busy}, Icon("image"), busy?"產生中…":"存成圖卡"),
-          e("button",{onClick:()=>setOffset(o=>o+1)}, "下一則", Icon("next"))),
-        e("div",{className:"reward"}, reward)
-      );
+    else if (!facts || !st) body = e("div",{className:"card"}, e("p",{style:{color:"#888"}},"貓咪準備中…"));
+    else if (view==="yard"){
+      let status;
+      if (arrived.length) status = `有 ${arrived.length} 隻貓來了！點牠，猜猜牠在說什麼`;
+      else if (pending.length) status = `食盆裡有 ${pending.length} 條小魚，貓咪在路上了…（最快大約 ${minsText(Math.min(...pending.map(v=>v.at))-now)}）`;
+      else status = `點食盆放 1 條小魚，${RULES.visitMinMin}–${RULES.visitMaxMin} 分鐘後會有貓來`;
+      body = e("div",null,
+        e("div",{className:"yard"},
+          Object.entries(ITEMS).filter(([k])=>st.items.includes(k)).map(([k,it])=> e("img",{key:k, className:"item", src:`./yard/${k}.webp`, alt:it.name, style:it.pos})),
+          e("img",{className:"bowl", src:"./yard/bowl.webp", alt:"食盆，點一下放小魚", onClick:feed}),
+          e("div",{className:"bowl-tag"}, pending.length ? `🐟 × ${pending.length}` : "點我放小魚"),
+          arrived.map((v,i)=>{
+            const friend = st.adopted.includes(v.cat);
+            return e(React.Fragment,{key:v.id},
+              e("img",{className:"visitor", src:catSrc(v.cat), alt:"來訪的貓", style:SLOTS[i], onClick:()=>openVisitor(v)}),
+              e("div",{className:"bubble-tag", style:{ left:SLOTS[i].left, bottom:`calc(${SLOTS[i].bottom} + 26%)` }}, friend ? "老朋友來玩了 ♡" : "？"));
+          })),
+        e("div",{className:"status"}, status),
+        e("div",{className:"card"},
+          e("div",{className:"dex-head"}, e("h2",null,"道具"), e("span",null,"放在院子裡，會吸引特別的貓")),
+          e("div",{className:"shop"},
+            Object.entries(ITEMS).map(([k,it])=>{
+              const own = st.items.includes(k);
+              return e("div",{key:k, className:"it"+(own?" own":""), onClick:()=>buy(k)},
+                e("img",{src:`./yard/${k}.webp`, alt:it.name}), e("div",null,it.name), e("div",{className:"c"}, own ? "已擺放" : `🐟 ${it.cost}`));
+            })),
+          e("div",{className:"rules"}, `每天第一次來 +${RULES.dailyBonus}　猜對 +${RULES.correct}　老朋友來玩 +${RULES.friendVisit}　分享圖卡 +${RULES.shareBonus}（每天一次）　餵食 −${RULES.feedCost}`)));
     } else if (view==="dex"){
       const n = st.adopted.length;
       body = e("div",{className:"card"},
-        e("div",{className:"dex-head"}, e("h2",null,"貓咪圖鑑"), e("span",null, `已領養 ${n} / 20`)),
+        e("div",{className:"dex-head"}, e("h2",null,"貓咪圖鑑"), e("span",null, `交到 ${n} / 20 個朋友`)),
         e("div",{className:"progress"}, e("i",{style:{width:`${n/20*100}%`}})),
-        e("div",{className:"rules"}, `讀一則新貓語 +${RULES.newFact}　每天第一次來 +${RULES.dailyBonus}　分享圖卡 +${RULES.shareBonus}（每天一次）　領養一隻 −${RULES.adoptCost}`),
+        e("div",{className:"rules"}, "在院子猜對貓語，就能跟牠交朋友。有些貓要先擺對道具才會出現。"),
         e("div",{className:"grid"},
           facts.slice().sort((a,b)=>a.id-b.id).map(f=>{
-            const id = String(f.id); const has = st.adopted.includes(id); const seen = st.seen.includes(id);
-            return e("div",{key:id, className:"cell"+(has?"":" locked"), onClick:()=>openFact(id)},
-              e("img",{src:catSrc(id), alt: has ? `${CAT_COATS[id]}，${f.behavior}` : "尚未領養", loading:"lazy"}),
+            const id = String(f.id); const has = st.adopted.includes(id); const need = NEEDS[id];
+            return e("div",{key:id, className:"cell"+(has?"":" locked"), onClick:()=> has ? setDetail({id}) : say(need && !st.items.includes(need) ? `這隻貓喜歡${ITEMS[need].name}，擺好牠才會來` : "還沒交到這個朋友，多放點小魚吧")},
+              e("img",{src:catSrc(id), alt: has ? `${CAT_COATS[id]}，${f.behavior}` : "尚未相遇", loading:"lazy"}),
               e("div",{className:"n"}, `No.${String(id).padStart(2,"0")}`),
-              e("div",{className:"t"}, has ? `${CAT_COATS[id]}・${f.behavior}` : (seen ? "已讀，可領養" : "？？？")));
-          }))
-      );
+              e("div",{className:"t"}, has ? `${CAT_COATS[id]}・${f.behavior}` : (need && !st.items.includes(need) ? `需要${ITEMS[need].name}` : "？？？")));
+          })));
     } else {
-      const list = st.favs.map(id=>facts.find(f=>String(f.id)===id)).filter(Boolean);
+      const list = st.favs.map(id=>factOf(id)).filter(Boolean);
       body = e("div",{className:"card"},
         e("div",{className:"dex-head"}, e("h2",null,"我的收藏"), e("span",null, `${list.length} 則`)),
-        list.length===0 ? e("p",{style:{color:"#888", fontSize:"14px"}},"還沒有收藏，看到喜歡的貓語按「收藏」吧。")
-          : list.map(f=> e("div",{key:f.id, className:"fav", onClick:()=>openFact(f.id)},
+        list.length===0 ? e("p",{style:{color:"#888", fontSize:"14px"}},"在圖鑑裡點開喜歡的貓，按「收藏」就會出現在這裡。")
+          : list.map(f=> e("div",{key:f.id, className:"fav", onClick:()=>setDetail({id:String(f.id)})},
               e("img",{src:catSrc(f.id), alt:""}), e("div",null, e("div",{className:"b"}, f.behavior), e("div",{className:"s"}, f.catSays)))));
+    }
+
+    // 猜貓語
+    let quizModal = null;
+    if (quiz){
+      const f = factOf(quiz.visit.cat);
+      quizModal = e("div",{className:"modal-bg", onClick:()=> quiz.picked && setQuiz(null)},
+        e("div",{className:"modal", onClick:ev=>ev.stopPropagation()},
+          e("img",{className:"catpic", src:catSrc(f.id), alt:"來訪的貓"}),
+          e("div",{className:"cue"}, f.cue),
+          e("div",{className:"q"}, "牠在說什麼？"),
+          e("div",{className:"opts"},
+            quiz.options.map(o=> e("button",{key:o, className:"opt" + (quiz.picked ? (o===f.catSays?" right": (o===quiz.picked?" wrong":"")) : ""), onClick:()=>answer(o), disabled:!!quiz.picked}, o))),
+          quiz.picked ? e(React.Fragment,null,
+            e("div",{className:"verdict", style:{color: quiz.ok ? "#4f8a3d" : "#b5655f"}},
+              quiz.ok ? `答對了！${CAT_COATS[f.id]}跟你成為朋友 🐾 +${RULES.correct} 🐟` : "差一點！牠先回家了，下次還會再來"),
+            FactBlock(f),
+            e("div",{className:"actions"}, e("button",{onClick:()=>setQuiz(null)}, quiz.ok ? "收進圖鑑" : "好，下次再猜"))) : null));
+    }
+    // 圖鑑／老朋友詳細
+    let detailModal = null;
+    if (detail){
+      const f = factOf(detail.id); const isFav = st.favs.includes(String(detail.id));
+      detailModal = e("div",{className:"modal-bg", onClick:()=>setDetail(null)},
+        e("div",{className:"modal", onClick:ev=>ev.stopPropagation()},
+          detail.greet ? e("div",{className:"verdict", style:{color:"#8a6a50"}}, `${CAT_COATS[f.id]}來找你玩了 +${RULES.friendVisit} 🐟`) : null,
+          e("img",{className:"catpic", src:catSrc(f.id), alt:`${CAT_COATS[f.id]}，${f.behavior}`}),
+          FactBlock(f),
+          e("div",{className:"actions"},
+            e("button",{className:"secondary", onClick:()=>toggleFav(f.id)}, Icon(isFav?"heartFill":"heart"), isFav?"已收藏":"收藏"),
+            e("button",{className:"secondary", onClick:()=>shareCard(f.id), disabled:busy}, Icon("image"), busy?"產生中…":"存成圖卡"),
+            e("button",{onClick:()=>setDetail(null)}, "關閉"))));
     }
 
     return e("div",null, header,
       e("div",{className:"wrap"}, tabs, body,
         e("div",{className:"sync"}, sync, isAnon ? "　·　目前未綁定帳號，換手機前請先用 Google 保存" : "")),
+      quizModal, detailModal,
       e("div",{className:"toast"+(toast?" show":"")}, toast));
   }
 
