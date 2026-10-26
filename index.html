@@ -150,7 +150,7 @@
     shareBonus: 2,        // 分享圖卡（每天一次）
     feedCost: 1,          // 放 1 條小魚到食盆
     bowlMax: 3,           // 食盆最多放幾條
-    visitMinMin: 10, visitMaxMin: 30,   // 貓多久會來（分鐘）
+    visitMinMin: 1, visitMaxMin: 3,     // 貓多久會來（分鐘）
     maxVisitors: 3        // 院子最多同時幾隻
   };
   // 道具：有些貓只有看到特定道具才會來
@@ -284,6 +284,9 @@
           let s = snap.exists() ? normalize(snap.data()) : EMPTY;
           const legacy = { fish: readLocal("meow_fish", 0), seen: readLocal("meow_seen_facts", []), favs: (readLocal("meow_fav_facts", [])||[]).map(f=>f.id), adopted: [] };
           s = merge(s, merge(readLocal("meow_state", EMPTY), legacy));
+          // 縮短等待時間後，把之前排得比較晚的貓提前到新的時間範圍內
+          const latest = Date.now() + RULES.visitMaxMin*60000;
+          s = { ...s, visits: s.visits.map(v=> v.at > latest ? { ...v, at: Date.now() + (RULES.visitMinMin + Math.random()*(RULES.visitMaxMin-RULES.visitMinMin))*60000 } : v) };
           stRef.current = s; setSt(s); setSync("已存到雲端 ✓");
           await persist(u, s);
         }catch(err){ console.error(err); setSync("雲端讀取失敗，先用這台裝置的進度"); setSt(normalize(readLocal("meow_state", EMPTY))); }
