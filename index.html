@@ -293,7 +293,9 @@
         const blob = await makeCard(fact);
         const file = new File([blob], `meow-${String(fact.id).padStart(2,"0")}.png`, { type:"image/png" });
         let shared = false;
-        if (navigator.canShare && navigator.canShare({ files:[file] })){
+        // 手機（含 iPad）才跳分享選單；電腦一律直接下載到「下載」資料夾
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+        if (isMobile && navigator.canShare && navigator.canShare({ files:[file] })){
           await navigator.share({ files:[file], title:"今日貓語翻譯", text: fact.catSays + "\n— 喵～時刻 " + location.href.split("?")[0] }); shared = true;
         } else {
           const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
