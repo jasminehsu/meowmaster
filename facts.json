@@ -1,0 +1,182 @@
+[
+ {
+  "id": 1,
+  "behavior": "慢慢眨眼",
+  "catSays": "我瞇眼看你，是在說：我很放心喔～",
+  "explain": "研究發現，主人先對貓慢眨眼，貓也比較會慢眨眼回應，還更願意靠近陌生人的手。這是貓與人之間的正向溝通，你也可以慢眨回去！",
+  "sourceName": "Humphrey et al. (2020), Scientific Reports",
+  "sourceUrl": "https://www.nature.com/articles/s41598-020-73426-0",
+  "confidence": "高"
+ },
+ {
+  "id": 2,
+  "behavior": "尾巴直直豎起",
+  "catSays": "嗨！我很友善，過來打招呼吧！",
+  "explain": "尾巴垂直豎起、耳朵向前，是友善打招呼的訊號。但如果尾巴豎起又炸毛、還拱背側身，意思就變成「離我遠一點」。",
+  "sourceName": "International Cat Care – Cat Communication",
+  "sourceUrl": "https://icatcare.org/articles/cat-communication",
+  "confidence": "高"
+ },
+ {
+  "id": 3,
+  "behavior": "踏踏踩奶",
+  "catSays": "踏踏踏～想起小時候在媽媽身邊的感覺",
+  "explain": "踏踏的動作源自幼貓吸奶時踩媽媽肚子刺激乳汁，有些貓長大後還保留這習慣。就算爪子有點痛，也千萬別處罰牠，以免傷了感情。",
+  "sourceName": "International Cat Care – Why do cats..?",
+  "sourceUrl": "https://icatcare.org/articles/why-do-cats",
+  "confidence": "高"
+ },
+ {
+  "id": 4,
+  "behavior": "蹭蹭你的腳",
+  "catSays": "蹭一下，你身上就有我的味道了！",
+  "explain": "貓的臉頰、身體和尾巴都有氣味腺，蹭人或蹭東西（bunting）是在留下自己的氣味，和安心感與友善互動有關，也是一種打招呼。",
+  "sourceName": "International Cat Care – Cat Communication",
+  "sourceUrl": "https://icatcare.org/articles/cat-communication",
+  "confidence": "高"
+ },
+ {
+  "id": 5,
+  "behavior": "翻肚給你看",
+  "catSays": "我信任你，但肚肚不是給你摸的喔",
+  "explain": "翻肚通常代表信任或邀請玩耍，不一定是要你摸。很多貓被摸肚子會變成抓咬模式，是我們會錯意，不是牠翻臉。",
+  "sourceName": "International Cat Care – Why do cats..?",
+  "sourceUrl": "https://icatcare.org/articles/why-do-cats",
+  "confidence": "高"
+ },
+ {
+  "id": 6,
+  "behavior": "看到鳥喀喀叫",
+  "catSays": "喀喀喀！那隻鳥…我好想抓到牠！",
+  "explain": "貓看到抓不到的鳥或獵物時常發出喀喀聲。確切原因還不清楚，可能是看得到卻抓不到的挫折，也可能是興奮期待。",
+  "sourceName": "International Cat Care – Why do cats..?",
+  "sourceUrl": "https://icatcare.org/articles/why-do-cats",
+  "confidence": "中"
+ },
+ {
+  "id": 7,
+  "behavior": "叼獵物回家",
+  "catSays": "家裡最安全，戰利品先帶回來放！",
+  "explain": "打獵是本能，吃飽也會想抓。把獵物帶回家，比較可能是因為家是牠覺得安全、可以安心吃或存放的地方，不一定是送禮。",
+  "sourceName": "Cats Protection – Why do cats bring you dead animals?",
+  "sourceUrl": "https://www.cats.org.uk/cats-blog/why-do-cats-bring-you-dead-animals",
+  "confidence": "中"
+ },
+ {
+  "id": 8,
+  "behavior": "飛機耳",
+  "catSays": "我有點怕…請先不要靠近我",
+  "explain": "耳朵往後壓平、貼著頭，常是害怕的表現，有時還會伴隨哈氣。這時候母湯硬抱，給牠空間和退路比較好。",
+  "sourceName": "Cornell Feline Health Center – Feline Behavior Problems: Aggression",
+  "sourceUrl": "https://www.vet.cornell.edu/departments-centers-and-institutes/cornell-feline-health-center/health-information/feline-health-topics/feline-behavior-problems-aggression",
+  "confidence": "高"
+ },
+ {
+  "id": 9,
+  "behavior": "呼嚕呼嚕",
+  "catSays": "呼嚕～不一定是開心，要看我當下狀況",
+  "explain": "貓常在放鬆、被摸、窩在熟悉的人身邊時呼嚕，但受傷或疼痛時也可能呼嚕。所以要搭配身體姿勢和情境一起判斷。",
+  "sourceName": "NC State College of Veterinary Medicine – Why do cats purr?",
+  "sourceUrl": "https://news.cvm.ncsu.edu/why-do-cats-purr-nc-state-university-college-of-veterinary-medicine-behavior-expert-explains/",
+  "confidence": "高"
+ },
+ {
+  "id": 10,
+  "behavior": "摸著摸著甩尾巴",
+  "catSays": "夠了夠了，再摸我要出手囉！",
+  "explain": "有些貓被摸到一半會突然咬人。出手前常見警訊是瞳孔放大、尾巴用力甩、耳朵往後轉，看到就先停手吧。",
+  "sourceName": "Cornell Feline Health Center – Feline Behavior Problems: Aggression",
+  "sourceUrl": "https://www.vet.cornell.edu/departments-centers-and-institutes/cornell-feline-health-center/health-information/feline-health-topics/feline-behavior-problems-aggression",
+  "confidence": "高"
+ },
+ {
+  "id": 11,
+  "behavior": "討飯專用呼嚕",
+  "catSays": "呼嚕中夾帶哭音：快點放飯啦～",
+  "explain": "研究發現，有些貓討食時的呼嚕裡藏著高頻的「哭音」，人聽起來更急迫、更難忽略。這多見於和主人一對一關係緊密的貓。",
+  "sourceName": "McComb et al. (2009), Current Biology",
+  "sourceUrl": "https://www.cell.com/current-biology/fulltext/S0960-9822(09)01168-3",
+  "confidence": "中"
+ },
+ {
+  "id": 12,
+  "behavior": "對著你喵喵叫",
+  "catSays": "喵～這聲是專門叫給你聽的！",
+  "explain": "成貓彼此之間很少喵喵叫，喵聲主要是對人發的。貓會學到喵一聲就有人回應，於是發展出各種版本來「指揮」主人。",
+  "sourceName": "International Cat Care – Cat Communication",
+  "sourceUrl": "https://icatcare.org/articles/cat-communication",
+  "confidence": "高"
+ },
+ {
+  "id": 13,
+  "behavior": "叫名字動耳朵",
+  "catSays": "我有聽到我的名字，只是懶得起身",
+  "explain": "研究顯示，名字常被叫的家貓分得出自己的名字和其他字詞，通常以動耳朵或轉頭回應。沒反應不代表聽不懂，可能只是沒興趣。",
+  "sourceName": "Saito et al. (2019), Scientific Reports（東京大學新聞稿）",
+  "sourceUrl": "https://www.u-tokyo.ac.jp/focus/en/press/z0508_00040.html",
+  "confidence": "高"
+ },
+ {
+  "id": 14,
+  "behavior": "突然暴衝",
+  "catSays": "電力滿格！不跑一下我會爆炸！",
+  "explain": "貓突然狂奔亂竄（俗稱暴衝），常在傍晚出現，一般認為是累積的精力一次釋放，屬正常行為。多陪玩、多消耗體力會有幫助。",
+  "sourceName": "International Cat Care – Why do cats..?",
+  "sourceUrl": "https://icatcare.org/articles/why-do-cats",
+  "confidence": "中"
+ },
+ {
+  "id": 15,
+  "behavior": "張嘴聞到傻眼",
+  "catSays": "等等，這味道我要仔細分析一下…",
+  "explain": "貓聞到特別的氣味時會掀唇張嘴，像傻眼一樣，這叫裂唇嗅反應（flehmen），是把氣味送到上顎的犁鼻器（Jacobson 器官）分析。",
+  "sourceName": "International Cat Care – Why do cats..?",
+  "sourceUrl": "https://icatcare.org/articles/why-do-cats",
+  "confidence": "高"
+ },
+ {
+  "id": 16,
+  "behavior": "猛抓沙發",
+  "catSays": "磨磨爪、伸伸懶腰，順便簽個名！",
+  "explain": "抓東西是正常需求：能伸展身體、褪掉舊的爪鞘露出新爪，也能留下氣味和抓痕當作地盤標記。準備好貓抓板，比禁止更有用。",
+  "sourceName": "ASPCA – Destructive Scratching",
+  "sourceUrl": "https://www.aspca.org/pet-care/cat-care/common-cat-behavior-issues/destructive-scratching",
+  "confidence": "高"
+ },
+ {
+  "id": 17,
+  "behavior": "鑽進紙箱",
+  "catSays": "躲在箱子裡，我就安心多了",
+  "explain": "研究發現，剛進收容所的貓若有躲藏箱，前幾天的壓力分數明顯較低，也更快適應新環境。箱子對貓來說是安全感來源。",
+  "sourceName": "Vinke et al. (2014), Applied Animal Behaviour Science",
+  "sourceUrl": "https://research-portal.uu.nl/en/publications/will-a-hiding-box-provide-stress-reduction-for-shelter-cats/",
+  "confidence": "高"
+ },
+ {
+  "id": 18,
+  "behavior": "坐進地上方框",
+  "catSays": "地上有個框框？那就是我的位子！",
+  "explain": "一項公民科學研究用膠帶在地上貼方形和錯覺方形，發現有些貓會坐進去，連「看起來像方形」的錯覺圖也會。不過樣本很小，還需更多研究。",
+  "sourceName": "Smith et al. (2021), Applied Animal Behaviour Science",
+  "sourceUrl": "https://www.sciencedirect.com/science/article/abs/pii/S0168159121001258",
+  "confidence": "中"
+ },
+ {
+  "id": 19,
+  "behavior": "舔舔你",
+  "catSays": "幫你理毛，你就是我的自己人了",
+  "explain": "貓會替同伴理毛來維繫感情，舔人可能是同樣的心意，也能讓你沾上熟悉的氣味。但如果舔得太頻繁，可能是壓力，建議請獸醫看看。",
+  "sourceName": "Cats Protection – Why does my cat lick me?",
+  "sourceUrl": "https://www.cats.org.uk/cats-blog/why-does-my-cat-lick-me",
+  "confidence": "中"
+ },
+ {
+  "id": 20,
+  "behavior": "「咕嚕兒」顫音",
+  "catSays": "咕嚕兒～你回來啦！",
+  "explain": "貓發出短促上揚的顫音（trill／chirrup），是友善的打招呼叫聲。貓媽媽也會用這種聲音呼喚小貓。",
+  "sourceName": "International Cat Care – Cat Communication",
+  "sourceUrl": "https://icatcare.org/articles/cat-communication",
+  "confidence": "高"
+ }
+]
