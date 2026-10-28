@@ -93,6 +93,31 @@
     .shop .it img{ width:70%; aspect-ratio:1/1; object-fit:contain; }
     .shop .it.own{ background:#f6f1e8; color:#9a9a9a; cursor:default; }
     .shop .it .c{ color:#8a6a50; margin-top:2px; }
+    .yard .resident{ width:19%; transform:translateX(-50%); cursor:pointer; filter:drop-shadow(0 6px 8px rgba(0,0,0,.10)); }
+    .home-tag{ position:absolute; transform:translate(-50%,-100%); background:rgba(255,255,255,.9); border-radius:999px; padding:2px 8px; font-size:11px; color:#8a6a50; white-space:nowrap; pointer-events:none; }
+    .yard .gift{ left:70%; bottom:9%; width:11%; transform:translateX(-50%); cursor:pointer; filter:drop-shadow(0 4px 6px rgba(0,0,0,.15)); animation:pop .5s ease-out, bob 2.4s ease-in-out .5s infinite; }
+    @keyframes bob{ 0%,100%{ transform:translateX(-50%);} 50%{ transform:translateX(-50%) translateY(-4px);} }
+    .gift-tag{ position:absolute; left:70%; bottom:17%; transform:translateX(-50%); background:#fff; border-radius:999px; padding:3px 9px; font-size:11px; color:#8a6a50; pointer-events:none; white-space:nowrap; }
+    .streak{ text-align:center; font-size:12px; color:#a09a90; margin-top:4px; }
+    .scene{ width:100%; border-radius:18px; display:block; }
+    .away-text{ text-align:center; font-size:17px; line-height:1.7; margin-top:14px; color:#333; }
+    .giftgrid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; }
+    .giftgrid .g{ background:#faf8f4; border:1px solid var(--line); border-radius:14px; padding:6px 4px 8px; text-align:center; font-size:11px; color:#555; }
+    .giftgrid .g img{ width:70%; aspect-ratio:1/1; object-fit:contain; display:block; margin:0 auto; }
+    .giftgrid .g.locked img{ filter:brightness(0) opacity(.12); }
+    .giftgrid .g.locked{ color:#bbb; }
+    .sub-h{ margin:22px 0 0; font-size:15px; letter-spacing:.08em; }
+    .hearts{ text-align:center; color:var(--accent); font-size:18px; letter-spacing:.2em; margin-top:4px; }
+    .lvnote{ text-align:center; font-size:12px; color:#8a8a8a; margin-top:2px; }
+    .catname{ text-align:center; font-size:20px; font-weight:700; margin-top:4px; }
+    .namebtn{ background:none; color:#8a6a50; padding:2px 6px; font-size:12px; text-decoration:underline; }
+    .namerow{ display:flex; gap:8px; justify-content:center; margin-top:8px; }
+    .namerow input{ font-family:inherit; font-size:16px; padding:9px 14px; border-radius:999px; border:1px solid var(--line); width:min(220px,55vw); }
+    .stories{ margin-top:18px; border-top:1px dashed var(--line); padding-top:14px; }
+    .story{ font-size:15px; line-height:1.8; color:#444; margin-top:10px; padding-left:28px; position:relative; }
+    .story::before{ content:attr(data-lv); position:absolute; left:0; top:1px; font-size:12px; color:var(--accent); }
+    .story.locked{ color:#b0aaa0; }
+    .levelup{ text-align:center; background:#fbf3ea; border-radius:16px; padding:10px; margin-top:10px; color:#8a6a50; font-size:14px; line-height:1.6; }
     /* Modal */
     .modal-bg{ position:fixed; inset:0; background:rgba(0,0,0,.28); z-index:90; display:flex; align-items:flex-end; justify-content:center; }
     .modal{ background:#fff; width:min(620px,100%); max-height:92vh; overflow:auto; border-radius:28px 28px 0 0; padding:22px 20px 28px; }
@@ -106,7 +131,7 @@
     .opt.wrong{ background:#fbeeee; border-color:#e4b1b1; }
     .verdict{ text-align:center; margin-top:16px; font-size:17px; font-weight:700; }
     .sync{ text-align:center; font-size:11px; color:#a09a90; margin-top:18px; letter-spacing:.08em; }
-    .toast{ position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:rgba(30,30,30,.92); color:#fff; padding:10px 16px; border-radius:999px; font-size:13px; z-index:120; opacity:0; transition:opacity .2s; pointer-events:none; max-width:90vw; text-align:center; }
+    .toast{ position:fixed; top:72px; left:50%; transform:translateX(-50%); background:rgba(30,30,30,.92); color:#fff; padding:10px 16px; border-radius:999px; font-size:13px; z-index:120; opacity:0; transition:opacity .2s; pointer-events:none; max-width:90vw; text-align:center; }
     .toast.show{ opacity:1; }
 
     @media (max-width:420px){
@@ -151,8 +176,35 @@
     feedCost: 1,          // 放 1 條小魚到食盆
     bowlMax: 3,           // 食盆最多放幾條
     arriveMs: 1500,      // 放完小魚後，貓多久出現（毫秒）
-    maxVisitors: 3        // 院子最多同時幾隻
+    maxVisitors: 3,       // 院子最多同時幾隻
+    lv2: 3,               // 成為朋友後再來玩幾次 → ♡♡
+    lv3: 9,               // 成為朋友後總共來玩幾次 → ♡♡♡ 住下來（3＋6）
+    maxResidents: 3,      // 院子裡同時顯示幾隻住下來的貓
+    nameMax: 8,           // 名字最多幾個字
+    awayMs: 60*60*1000,   // 離開多久，回來會看到「你不在的時候」
+    giftMs: 4*60*60*1000, // 離開多久，♡♡ 以上的朋友可能留下回禮
+    giftChance: 0.7,      // 留回禮的機率
+    giftFish: 1           // 收下回禮送幾條小魚
   };
+  // 回禮：12 種小東西
+  const GIFTS = {
+    leaf:{name:"銀杏葉"}, cap:{name:"瓶蓋"}, feather:{name:"羽毛"}, yarn:{name:"毛線球"}, mouse:{name:"玩具老鼠"}, butterfly:{name:"蝴蝶玩具"},
+    scrunchie:{name:"髮圈"}, pinecone:{name:"松果"}, bell:{name:"小鈴鐺"}, pebble:{name:"小石頭"}, ribbon:{name:"緞帶"}, cookie:{name:"魚形餅乾"}
+  };
+  // 有些貓有偏好的回禮（一半機率送這個）
+  const CAT_GIFT = {3:"yarn",6:"butterfly",7:"mouse",11:"cookie",13:"leaf",16:"feather",17:"cap",18:"ribbon",19:"scrunchie",14:"pinecone",8:"pebble",23:"bell"};
+  // 連續登入的特別貓
+  const SPECIALS = [ {id:"21", days:3}, {id:"22", days:7}, {id:"23", days:14} ];
+  const isSpecial = id => Number(id) > 20;
+  // 「你不在的時候」：情境圖＋句子（{A}{B} 會換成你的貓）
+  const SCENES = [
+    { img:"box",   need:"box",     lines:["{A}霸佔了紙箱，{B}在旁邊看了好久，最後放棄了。","{A}在紙箱裡睡著了，{B}一直想擠進去。","{B}偷偷把頭伸進紙箱，被{A}瞪了一眼。","紙箱今天換了三個主人，最後還是{A}贏了。","{A}窩在紙箱裡打呼，{B}幫牠站崗。"] },
+    { img:"sill",  need:null,      lines:["{A}和{B}在窗台上曬太陽，一起睡了一下午。","窗台只有一個位置，{A}和{B}決定疊在一起。","{A}在窗台上翻了個身，差點把{B}擠下去。","陽光移到哪裡，{A}和{B}就跟到哪裡。","{A}和{B}在窗台上睡到流口水，誰都沒發現。"] },
+    { img:"groom", need:null,      lines:["{A}幫{B}理毛，理到{B}睡著了。","{B}頭上有一撮毛翹起來，{A}幫牠舔平了。","{A}和{B}互相理毛，理到一半開始打架，又和好了。","{A}說{B}的耳朵後面沒洗乾淨，幫牠補洗了一下。","{B}閉著眼睛讓{A}理毛，一臉享受。"] },
+    { img:"wand",  need:"wand",    lines:["{A}一直撲逗貓棒，{B}在旁邊假裝沒興趣。","逗貓棒今天被{A}撲倒了十二次。","{B}說牠不玩逗貓棒，結果玩得比{A}還瘋。","{A}和{B}搶逗貓棒，羽毛掉了一根。","{A}抓到逗貓棒，得意地看了{B}一眼。"] },
+    { img:"knead", need:"blanket", lines:["{A}在毛毯上踩了好久，踩完就窩著睡了。","毛毯被{A}踩成了完美的形狀，{B}想躺上去，被趕走了。","{A}一邊踩毛毯一邊呼嚕，聲音整個院子都聽得到。","{B}趁{A}不注意，偷偷睡上了毛毯。","{A}把毛毯踩得軟綿綿的，然後邀請{B}一起睡。"] },
+    { img:"dusk",  need:null,      lines:["傍晚，{A}和{B}排成一排看麻雀。誰都沒抓到。","{A}對著麻雀喀喀叫了好久，麻雀完全不理牠。","太陽下山的時候，{A}和{B}靜靜地坐在一起。","麻雀停在牆上，{A}和{B}一動也不動地盯著。","{B}想偷偷靠近麻雀，被{A}的尾巴絆倒了。"] }
+  ];
   // 道具：有些貓只有看到特定道具才會來
   const ITEMS = {
     box:     { name:"紙箱",   cost:8,  cat:17, pos:{left:"4%",  bottom:"20%", width:"28%"} },
@@ -162,11 +214,13 @@
   };
   const NEEDS = Object.fromEntries(Object.entries(ITEMS).map(([k,v])=>[String(v.cat), k]));
   const SLOTS = [ {left:"24%", bottom:"20%"}, {left:"76%", bottom:"24%"}, {left:"52%", bottom:"46%"} ];
+  const HOME_SLOTS = [ {left:"72%", bottom:"62%"}, {left:"15%", bottom:"53%"}, {left:"89%", bottom:"45%"} ];
 
   // ---- 20 隻貓：編號 = 貓語編號 ----
-  const CAT_FILES = {1:"01-slow-blink",2:"02-tail-up",3:"03-kneading",4:"04-leg-rub",5:"05-belly-up",6:"06-chattering",7:"07-bring-prey",8:"08-airplane-ears",9:"09-purring",10:"10-tail-lashing",11:"11-food-purr",12:"12-meowing",13:"13-name-ear",14:"14-zoomies",15:"15-flehmen",16:"16-scratching",17:"17-box",18:"18-tape-square",19:"19-licking",20:"20-trill"};
-  const CAT_COATS = {1:"灰虎斑",2:"白貓",3:"奶油橘白",4:"棕虎斑",5:"三花",6:"賓士",7:"黑貓",8:"玳瑁",9:"橘白",10:"銀虎斑",11:"灰白",12:"暹羅",13:"奶油",14:"橘虎斑",15:"棕虎斑",16:"藍灰",17:"橘虎斑",18:"白橘",19:"淡三花",20:"藍灰"};
+  const CAT_FILES = {21:"21-scarf",22:"22-flower",23:"23-bell",1:"01-slow-blink",2:"02-tail-up",3:"03-kneading",4:"04-leg-rub",5:"05-belly-up",6:"06-chattering",7:"07-bring-prey",8:"08-airplane-ears",9:"09-purring",10:"10-tail-lashing",11:"11-food-purr",12:"12-meowing",13:"13-name-ear",14:"14-zoomies",15:"15-flehmen",16:"16-scratching",17:"17-box",18:"18-tape-square",19:"19-licking",20:"20-trill"};
+  const CAT_COATS = {21:"圍巾貓",22:"花圈貓",23:"鈴鐺貓",1:"灰虎斑",2:"白貓",3:"奶油橘白",4:"棕虎斑",5:"三花",6:"賓士",7:"黑貓",8:"玳瑁",9:"橘白",10:"銀虎斑",11:"灰白",12:"暹羅",13:"奶油",14:"橘虎斑",15:"棕虎斑",16:"藍灰",17:"橘虎斑",18:"白橘",19:"淡三花",20:"藍灰"};
   const catSrc = id => `./cats/${CAT_FILES[id]}.webp`;
+  const hearts = lv => "♡".repeat(lv) + "·".repeat(3-lv);
 
   function twDate(offsetDays=0){ return new Date(Date.now() + 8*3600*1000 + offsetDays*86400000).toISOString().slice(0,10); }
   function dayNumber(){ return Math.floor((Date.now() + 8*3600*1000) / 86400000); }
@@ -174,11 +228,25 @@
   function writeLocal(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} }
   const uniq = a => Array.from(new Set((a||[]).map(String)));
 
-  const EMPTY = { fish:0, seen:[], favs:[], adopted:[], items:[], bowl:0, visits:[], lastDaily:"", lastShare:"" };
+  const EMPTY = { fish:0, seen:[], favs:[], adopted:[], items:[], bowl:0, visits:[], names:{}, aff:{}, gifts:{}, gift:null, lastSeen:0, streak:0, streakDay:"", lastDaily:"", lastShare:"" };
+  function cleanGifts(o){ const r={}; if (o && typeof o==="object") for (const [k,v] of Object.entries(o)){ const n=Math.max(0, Math.min(9999, Math.floor(Number(v)||0))); if (GIFTS[k] && n) r[k]=n; } return r; }
+  function cleanGift(g){ return (g && GIFTS[g.g] && Number(g.cat)>=1 && Number(g.cat)<=23) ? { g:String(g.g), cat:String(g.cat) } : null; }
+  function cleanName(n){ return String(n||"").replace(/[<>{}\[\]\\\/"`]/g,"").replace(/\s+/g," ").trim().slice(0, RULES.nameMax); }
+  function cleanNames(o){ const r={}; if (o && typeof o==="object") for (const [k,v] of Object.entries(o)){ const id=Number(k); const n=cleanName(v); if (id>=1 && id<=23 && n) r[String(id)]=n; } return r; }
+  function cleanAff(o){ const r={}; if (o && typeof o==="object") for (const [k,v] of Object.entries(o)){ const id=Number(k); const n=Math.max(0, Math.min(999, Math.floor(Number(v)||0))); if (id>=1 && id<=23 && n) r[String(id)]=n; } return r; }
+  // 親密度：成為朋友 = ♡1；再來玩 lv2 次 = ♡2；總共 lv3 次 = ♡3（住下來）
+  function levelOf(s, id){ id=String(id); if (!s.adopted.includes(id)) return 0; const a = s.aff[id]||0; return a>=RULES.lv3 ? 3 : a>=RULES.lv2 ? 2 : 1; }
+  function toNext(s, id){ const a = s.aff[String(id)]||0, lv = levelOf(s,id); return lv===1 ? RULES.lv2-a : lv===2 ? RULES.lv3-a : 0; }
   function normalize(s){ s = s || {}; return { fish: Number(s.fish)||0, seen: uniq(s.seen), favs: uniq(s.favs), adopted: uniq(s.adopted), items: uniq(s.items), bowl: Math.max(0, Number(s.bowl)||0),
     visits: Array.isArray(s.visits) ? s.visits.filter(v=>v && v.cat && v.at).map(v=>({ id:String(v.id||v.at), cat:String(v.cat), at:Number(v.at) })) : [],
+    names: cleanNames(s.names), aff: cleanAff(s.aff), gifts: cleanGifts(s.gifts), gift: cleanGift(s.gift),
+    lastSeen: Number(s.lastSeen)||0, streak: Math.max(0, Math.floor(Number(s.streak)||0)), streakDay: String(s.streakDay||""),
     lastDaily: s.lastDaily||"", lastShare: s.lastShare||"" }; }
-  function merge(a, b){ a=normalize(a); b=normalize(b); return { fish: Math.max(a.fish,b.fish), seen: uniq([...a.seen,...b.seen]), favs: uniq([...a.favs,...b.favs]), adopted: uniq([...a.adopted,...b.adopted]), items: uniq([...a.items,...b.items]), bowl: Math.max(a.bowl,b.bowl), visits: a.visits.length>=b.visits.length ? a.visits : b.visits, lastDaily: a.lastDaily>b.lastDaily?a.lastDaily:b.lastDaily, lastShare: a.lastShare>b.lastShare?a.lastShare:b.lastShare }; }
+  function merge(a, b){ a=normalize(a); b=normalize(b); return { fish: Math.max(a.fish,b.fish), seen: uniq([...a.seen,...b.seen]), favs: uniq([...a.favs,...b.favs]), adopted: uniq([...a.adopted,...b.adopted]), items: uniq([...a.items,...b.items]), bowl: Math.max(a.bowl,b.bowl), visits: a.visits.length>=b.visits.length ? a.visits : b.visits,
+    gifts: Object.fromEntries(uniq([...Object.keys(a.gifts),...Object.keys(b.gifts)]).map(k=>[k, Math.max(a.gifts[k]||0, b.gifts[k]||0)])),
+    gift: a.gift || b.gift, lastSeen: Math.max(a.lastSeen,b.lastSeen),
+    ...(a.streakDay>=b.streakDay ? { streak:a.streak, streakDay:a.streakDay } : { streak:b.streak, streakDay:b.streakDay }),
+    names: { ...b.names, ...a.names }, aff: Object.fromEntries(uniq([...Object.keys(a.aff),...Object.keys(b.aff)]).map(k=>[k, Math.max(a.aff[k]||0, b.aff[k]||0)])), lastDaily: a.lastDaily>b.lastDaily?a.lastDaily:b.lastDaily, lastShare: a.lastShare>b.lastShare?a.lastShare:b.lastShare }; }
 
   function Icon(name){
     const p = { viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:1.6, strokeLinecap:"round", strokeLinejoin:"round" };
@@ -220,7 +288,7 @@
     x.fillStyle="#444"; x.font=`400 34px ${F}`;
     wrapCJK(x, fact.explain, W-280).slice(0,5).forEach((l,i)=>x.fillText(l, 140, y+56+i*54));
     x.textAlign="center"; x.fillStyle="#9a9a9a"; x.font=`400 24px ${F}`;
-    const src = wrapCJK(x, "資料來源：" + fact.sourceName, W-280).slice(0,2);
+    const src = fact.sourceName ? wrapCJK(x, "資料來源：" + fact.sourceName, W-280).slice(0,2) : [];
     src.forEach((l,i)=>x.fillText(l, W/2, H-160 - (src.length-1-i)*34));
     x.fillStyle="#555"; x.font=`700 30px ${F}`; x.fillText("喵～時刻 Meow~ Moment", W/2, H-112);
     return new Promise(ok=>c.toBlob(ok,"image/png"));
@@ -229,9 +297,10 @@
   // 依「放小魚的時間」安排來訪：每條小魚 = 一隻貓，在 10–30 分鐘內陸續抵達
   function pickCat(st, exclude){
     const pool = [];
-    for (let id=1; id<=20; id++){
+    for (let id=1; id<=23; id++){
       const k = String(id);
       if (exclude.includes(k)) continue;
+      if (isSpecial(k) && !st.adopted.includes(k)) continue;    // 特別貓要先靠連續登入認識
       const need = NEEDS[k];
       if (need && !st.items.includes(need)) continue;           // 沒有對應道具，這隻不會來
       const w = st.adopted.includes(k) ? 1 : (need ? 6 : 3);     // 還不認識的貓比較常來；道具貓更容易被吸引
@@ -262,8 +331,23 @@
     const saveTimer = useRef(null);
     const stRef = useRef(null);
 
-    function say(m){ setToast(m); clearTimeout(say._t); say._t = setTimeout(()=>setToast(""), 2400); }
+    function say(m){ setToast(m); clearTimeout(window.__toastT); window.__toastT = setTimeout(()=>setToast(""), 2600); }
     const factOf = id => facts && facts.find(f=>String(f.id)===String(id));
+    const nameOf = id => (st && st.names[String(id)]) || CAT_COATS[id];
+    const nameOf2 = (s, id) => s.names[String(id)] || CAT_COATS[id];
+    const [popups, setPopups] = useState([]);
+    function collectGift(){
+      if (!st || !st.gift) return; const { cat, g } = st.gift;
+      update(s=>({ ...s, gift:null, fish:s.fish+RULES.giftFish, gifts:{ ...s.gifts, [g]:(s.gifts[g]||0)+1 } }));
+      say(`${nameOf(cat)}留給你一個${GIFTS[g].name} +${RULES.giftFish} 🐟`);
+    }
+    const [naming, setNaming] = useState(null);   // 正在取名的貓 id
+    const [nameDraft, setNameDraft] = useState("");
+    function saveName(id){
+      const n = cleanName(nameDraft); id = String(id);
+      update(s=>{ const names = { ...s.names }; if (n) names[id]=n; else delete names[id]; return { ...s, names }; });
+      setNaming(null); say(n ? `以後就叫牠「${n}」了` : "已改回原本的稱呼");
+    }
 
     useEffect(()=>{ const t = setInterval(()=>setNow(Date.now()), 15000); return ()=>clearInterval(t); }, []);
     useEffect(()=>{ const f = ()=>setNow(Date.now()); document.addEventListener("visibilitychange", f); return ()=>document.removeEventListener("visibilitychange", f); }, []);
@@ -301,22 +385,46 @@
     }
     function update(fn){
       setSt(prev=>{
-        const next = normalize(fn(prev));
+        const next = { ...normalize(fn(prev)), lastSeen: Date.now() };
         stRef.current = next; writeLocal("meow_state", next); setSync("存檔中…");
         clearTimeout(saveTimer.current); saveTimer.current = setTimeout(()=>persist(auth.currentUser, stRef.current), 600);
         return next;
       });
     }
 
+    // 一打開 App：每日小魚、連續來訪、特別貓、回禮、「你不在的時候」
     useEffect(()=>{
-      if (!st) return;
-      const today = twDate();
-      if (st.lastDaily !== today){ update(s=>({ ...s, fish:s.fish+RULES.dailyBonus, lastDaily:today })); say(`今天第一次來，送你 ${RULES.dailyBonus} 條小魚 🐟`); }
-    }, [!!st]);
+      if (!st || !facts) return;
+      const today = twDate(), t = Date.now(), away = st.lastSeen ? t - st.lastSeen : 0;
+      const pops = [];
+      let s = { ...st };
+      if (s.lastDaily !== today){ s.fish += RULES.dailyBonus; s.lastDaily = today; say(`今天第一次來，送你 ${RULES.dailyBonus} 條小魚 🐟`); }
+      if (s.streakDay !== today){
+        s.streak = s.streakDay === twDate(-1) ? s.streak + 1 : 1; s.streakDay = today;
+        const got = SPECIALS.filter(x=> s.streak >= x.days && !s.adopted.includes(x.id));
+        if (got.length){ s.adopted = uniq([...s.adopted, ...got.map(x=>x.id)]); s.seen = uniq([...s.seen, ...got.map(x=>x.id)]); got.forEach(x=>pops.push({ type:"special", id:x.id, days:x.days })); }
+      }
+      const friends = s.adopted.filter(id=>!s.visits.some(v=>v.cat===id));
+      if (away >= RULES.giftMs && !s.gift && Math.random() < RULES.giftChance){
+        const close = s.adopted.filter(id=>levelOf(s,id)>=2);
+        if (close.length){ const cat = close[Math.floor(Math.random()*close.length)]; const keys = Object.keys(GIFTS);
+          const g = CAT_GIFT[cat] && Math.random()<0.5 ? CAT_GIFT[cat] : keys[Math.floor(Math.random()*keys.length)]; s.gift = { cat, g }; }
+      }
+      if (away >= RULES.awayMs && friends.length){
+        const scenes = SCENES.filter(x=>!x.need || s.items.includes(x.need)); const sc = scenes[Math.floor(Math.random()*scenes.length)];
+        const pick = friends.slice().sort(()=>Math.random()-.5); const A = nameOf2(s, pick[0]); const B = pick[1] ? nameOf2(s, pick[1]) : "隔壁的貓";
+        const line = sc.lines[Math.floor(Math.random()*sc.lines.length)].replaceAll("{A}", A).replaceAll("{B}", B);
+        pops.push({ type:"away", img:sc.img, text:line, gift: !!s.gift && !st.gift });
+      }
+      update(()=>s); if (pops.length) setPopups(pops);
+    }, [!!st && !!facts]);
 
     // ---- 院子 ----
     const arrived = st ? st.visits.filter(v=>v.at<=now).slice(0, RULES.maxVisitors) : [];
     const pending = st ? st.visits.filter(v=>v.at>now) : [];
+    // 住下來的貓（♡♡♡）：每天輪流顯示幾隻，正在當訪客的那隻不重複出現
+    const residents = st ? (()=>{ const all = st.adopted.filter(id=>levelOf(st,id)===3 && !st.visits.some(v=>v.cat===id)).sort((a,b)=>a-b);
+      if (all.length <= RULES.maxResidents) return all; const k = dayNumber() % all.length; return [...all.slice(k), ...all.slice(0,k)].slice(0, RULES.maxResidents); })() : [];
 
     function feed(){
       if (!st) return;
@@ -340,8 +448,10 @@
       const f = factOf(v.cat); if (!f) return;
       if (st.adopted.includes(v.cat)){
         // 老朋友：直接打招呼
-        update(s=>({ ...s, fish:s.fish+RULES.friendVisit, visits:s.visits.filter(x=>x.id!==v.id) }));
-        setDetail({ id:v.cat, greet:true });
+        const before = levelOf(st, v.cat);
+        const after = levelOf({ ...st, aff:{ ...st.aff, [v.cat]:(st.aff[v.cat]||0)+1 } }, v.cat);
+        update(s=>({ ...s, fish:s.fish+RULES.friendVisit, visits:s.visits.filter(x=>x.id!==v.id), aff:{ ...s.aff, [v.cat]:(s.aff[v.cat]||0)+1 } }));
+        setDetail({ id:v.cat, greet:true, levelUp: after>before ? after : 0 });
         return;
       }
       setQuiz({ visit:v, picked:null, options: shuffleSeeded([f.catSays, ...(f.wrong||[])], v.id) });
@@ -397,7 +507,7 @@
           isAnon ? e("button",{className:"acct", onClick:linkGoogle, title:"綁定後換手機也找得回進度"}, "用 Google 保存進度")
                  : e("span",{className:"acct done"}, "✓ 已綁定"))));
     const tabs = e("div",{className:"tabs"},
-      [["yard","院子"],["dex",`貓咪圖鑑 ${st?st.adopted.length:0}/20`],["favs","收藏"]].map(([k,l])=>
+      [["yard","院子"],["dex",`貓咪圖鑑 ${st?st.adopted.filter(id=>!isSpecial(id)).length:0}/20`],["favs","收藏"]].map(([k,l])=>
         e("div",{key:k, className:"tab"+(view===k?" on":""), onClick:()=>setView(k)}, l)));
 
     function FactBlock(f){
@@ -406,7 +516,7 @@
         e("div",{className:"bubble"}, f.catSays),
         e("div",{className:"truth-label"},"真相"),
         e("div",{className:"truth"}, f.explain),
-        e("div",{className:"source"}, "資料來源：", f.sourceUrl ? e("a",{href:f.sourceUrl, target:"_blank", rel:"noopener"}, f.sourceName) : f.sourceName));
+        f.sourceName ? e("div",{className:"source"}, "資料來源：", f.sourceUrl ? e("a",{href:f.sourceUrl, target:"_blank", rel:"noopener"}, f.sourceName) : f.sourceName) : null);
     }
 
     let body;
@@ -415,20 +525,30 @@
     else if (view==="yard"){
       let status;
       if (arrived.length) status = `有 ${arrived.length} 隻貓來了！點牠，猜猜牠在說什麼`;
+      else if (st.gift) status = "有貓留了回禮給你，點一下收下";
+      else if (residents.length && !pending.length) status = "點食盆放 1 條小魚，會有貓來。住下來的貓也可以點點看";
       else if (pending.length) status = "有貓聞到味道了，正在走過來…";
       else status = "點食盆放 1 條小魚，馬上會有貓來";
       body = e("div",null,
         e("div",{className:"yard"},
           Object.entries(ITEMS).filter(([k])=>st.items.includes(k)).map(([k,it])=> e("img",{key:k, className:"item", src:`./yard/${k}.webp`, alt:it.name, style:it.pos})),
+          residents.map((id,i)=> e(React.Fragment,{key:"home"+id},
+            e("img",{className:"resident", src:catSrc(id), alt:nameOf(id), style:HOME_SLOTS[i], onClick:()=>setDetail({id})}),
+            e("div",{className:"home-tag", style:{ left:HOME_SLOTS[i].left, bottom:`calc(${HOME_SLOTS[i].bottom} + 17%)` }}, nameOf(id)))),
           e("img",{className:"bowl", src:"./yard/bowl.webp", alt:"食盆，點一下放小魚", onClick:feed}),
+          st.gift ? e(React.Fragment,null,
+            e("img",{className:"gift", src:`./gifts/${st.gift.g}.webp`, alt:"回禮", onClick:collectGift}),
+            e("div",{className:"gift-tag"}, "回禮 🎁")) : null,
           e("div",{className:"bowl-tag"}, pending.length ? `🐟 × ${pending.length}` : "點我放小魚"),
           arrived.map((v,i)=>{
             const friend = st.adopted.includes(v.cat);
             return e(React.Fragment,{key:v.id},
               e("img",{className:"visitor", src:catSrc(v.cat), alt:"來訪的貓", style:SLOTS[i], onClick:()=>openVisitor(v)}),
-              e("div",{className:"bubble-tag", style:{ left:SLOTS[i].left, bottom:`calc(${SLOTS[i].bottom} + 26%)` }}, friend ? "老朋友來玩了 ♡" : "？"));
+              e("div",{className:"bubble-tag", style:{ left:SLOTS[i].left, bottom:`calc(${SLOTS[i].bottom} + 26%)` }}, friend ? `${nameOf(v.cat)} ${"♡".repeat(levelOf(st,v.cat))}` : "？"));
           })),
         e("div",{className:"status"}, status),
+        e("div",{className:"streak"}, (()=>{ const nx = SPECIALS.find(x=>!st.adopted.includes(x.id));
+          return `連續來訪 ${st.streak} 天` + (nx ? `　·　第 ${nx.days} 天會有特別的貓來` : "　·　特別的貓都來過了 ✓"); })()),
         e("div",{className:"card"},
           e("div",{className:"dex-head"}, e("h2",null,"道具"), e("span",null,"放在院子裡，會吸引特別的貓")),
           e("div",{className:"shop"},
@@ -439,26 +559,40 @@
             })),
           e("div",{className:"rules"}, `每天第一次來 +${RULES.dailyBonus}　猜對 +${RULES.correct}　老朋友來玩 +${RULES.friendVisit}　分享圖卡 +${RULES.shareBonus}（每天一次）　餵食 −${RULES.feedCost}`)));
     } else if (view==="dex"){
-      const n = st.adopted.length;
+      const n = st.adopted.filter(id=>!isSpecial(id)).length;
       body = e("div",{className:"card"},
         e("div",{className:"dex-head"}, e("h2",null,"貓咪圖鑑"), e("span",null, `交到 ${n} / 20 個朋友`)),
         e("div",{className:"progress"}, e("i",{style:{width:`${n/20*100}%`}})),
-        e("div",{className:"rules"}, "在院子猜對貓語，就能跟牠交朋友。有些貓要先擺對道具才會出現。"),
+        e("div",{className:"rules"}, `在院子猜對貓語，就能跟牠交朋友（♡）。朋友再來玩 ${RULES.lv2} 次變 ♡♡，再 ${RULES.lv3-RULES.lv2} 次變 ♡♡♡，牠就會住下來。每升一級解鎖一段牠的故事。`),
         e("div",{className:"grid"},
-          facts.slice().sort((a,b)=>a.id-b.id).map(f=>{
+          facts.filter(f=>!f.special).sort((a,b)=>a.id-b.id).map(f=>{
             const id = String(f.id); const has = st.adopted.includes(id); const need = NEEDS[id];
             return e("div",{key:id, className:"cell"+(has?"":" locked"), onClick:()=> has ? setDetail({id}) : say(need && !st.items.includes(need) ? `這隻貓喜歡${ITEMS[need].name}，擺好牠才會來` : "還沒交到這個朋友，多放點小魚吧")},
               e("img",{src:catSrc(id), alt: has ? `${CAT_COATS[id]}，${f.behavior}` : "尚未相遇", loading:"lazy"}),
               e("div",{className:"n"}, `No.${String(id).padStart(2,"0")}`),
-              e("div",{className:"t"}, has ? `${CAT_COATS[id]}・${f.behavior}` : (need && !st.items.includes(need) ? `需要${ITEMS[need].name}` : "？？？")));
-          })));
+              e("div",{className:"t"}, has ? `${nameOf(id)} ${"♡".repeat(levelOf(st,id))}` : (need && !st.items.includes(need) ? `需要${ITEMS[need].name}` : "？？？")));
+          })),
+        e("h3",{className:"sub-h"}, "特別的貓"),
+        e("div",{className:"rules"}, "連續來院子，就會有特別的貓來找你。中斷一天會重新從第 1 天算，已經來過的特別貓都會留著。"),
+        e("div",{className:"grid"},
+          SPECIALS.map(x=>{ const has = st.adopted.includes(x.id);
+            return e("div",{key:x.id, className:"cell"+(has?"":" locked"), onClick:()=> has ? setDetail({id:x.id}) : say(`連續來 ${x.days} 天，牠就會出現`)},
+              e("img",{src:catSrc(x.id), alt: has ? CAT_COATS[x.id] : "尚未相遇", loading:"lazy"}),
+              e("div",{className:"n"}, `連續 ${x.days} 天`),
+              e("div",{className:"t"}, has ? `${nameOf(x.id)} ${"♡".repeat(levelOf(st,x.id))}` : "？？？")); })));
     } else {
       const list = st.favs.map(id=>factOf(id)).filter(Boolean);
-      body = e("div",{className:"card"},
+      const gotN = Object.keys(st.gifts).length;
+      body = e("div",null, e("div",{className:"card"},
+        e("div",{className:"dex-head"}, e("h2",null,"回禮盒"), e("span",null, `${gotN} / 12 種`)),
+        e("div",{className:"rules"}, "親密度 ♡♡ 以上的貓，在你離開一陣子後，有時會在院子留下小禮物。"),
+        e("div",{className:"giftgrid"}, Object.entries(GIFTS).map(([k,g])=>{ const c = st.gifts[k]||0;
+          return e("div",{key:k, className:"g"+(c?"":" locked")}, e("img",{src:`./gifts/${k}.webp`, alt:c?g.name:"還沒收到", loading:"lazy"}), c ? `${g.name} ×${c}` : "？？？"); }))),
+        e("div",{className:"card"},
         e("div",{className:"dex-head"}, e("h2",null,"我的收藏"), e("span",null, `${list.length} 則`)),
         list.length===0 ? e("p",{style:{color:"#888", fontSize:"14px"}},"在圖鑑裡點開喜歡的貓，按「收藏」就會出現在這裡。")
           : list.map(f=> e("div",{key:f.id, className:"fav", onClick:()=>setDetail({id:String(f.id)})},
-              e("img",{src:catSrc(f.id), alt:""}), e("div",null, e("div",{className:"b"}, f.behavior), e("div",{className:"s"}, f.catSays)))));
+              e("img",{src:catSrc(f.id), alt:""}), e("div",null, e("div",{className:"b"}, f.behavior), e("div",{className:"s"}, f.catSays))))));
     }
 
     // 猜貓語
@@ -474,29 +608,66 @@
             quiz.options.map(o=> e("button",{key:o, className:"opt" + (quiz.picked ? (o===f.catSays?" right": (o===quiz.picked?" wrong":"")) : ""), onClick:()=>answer(o), disabled:!!quiz.picked}, o))),
           quiz.picked ? e(React.Fragment,null,
             e("div",{className:"verdict", style:{color: quiz.ok ? "#4f8a3d" : "#b5655f"}},
-              quiz.ok ? `答對了！${CAT_COATS[f.id]}跟你成為朋友 🐾 +${RULES.correct} 🐟` : "差一點！牠先回家了，下次還會再來"),
+              quiz.ok ? `答對了！${CAT_COATS[f.id]}跟你成為朋友 ♡ +${RULES.correct} 🐟` : "差一點！牠先回家了，下次還會再來"),
+            quiz.ok && f.stories ? e("div",{className:"levelup"}, "解鎖第 1 段故事：", e("br"), f.stories[0]) : null,
             FactBlock(f),
-            e("div",{className:"actions"}, e("button",{onClick:()=>setQuiz(null)}, quiz.ok ? "收進圖鑑" : "好，下次再猜"))) : null));
+            e("div",{className:"actions"}, quiz.ok ? e("button",{className:"adopt", onClick:()=>{ setQuiz(null); setDetail({id:String(f.id)}); setNaming(String(f.id)); setNameDraft(""); }}, "幫牠取名字") : null,
+            e("button",{onClick:()=>setQuiz(null)}, quiz.ok ? "收進圖鑑" : "好，下次再猜"))) : null));
     }
     // 圖鑑／老朋友詳細
     let detailModal = null;
     if (detail){
-      const f = factOf(detail.id); const isFav = st.favs.includes(String(detail.id));
-      detailModal = e("div",{className:"modal-bg", onClick:()=>setDetail(null)},
+      const f = factOf(detail.id); const isFav = st.favs.includes(String(detail.id)); const lv = levelOf(st, f.id);
+      const closeDetail = ()=>{ setDetail(null); setNaming(null); };
+      detailModal = e("div",{className:"modal-bg", onClick:closeDetail},
         e("div",{className:"modal", onClick:ev=>ev.stopPropagation()},
-          detail.greet ? e("div",{className:"verdict", style:{color:"#8a6a50"}}, `${CAT_COATS[f.id]}來找你玩了 +${RULES.friendVisit} 🐟`) : null,
-          e("img",{className:"catpic", src:catSrc(f.id), alt:`${CAT_COATS[f.id]}，${f.behavior}`}),
+          detail.greet ? e("div",{className:"verdict", style:{color:"#8a6a50"}}, `${nameOf(f.id)}來找你玩了 +${RULES.friendVisit} 🐟`) : null,
+          detail.levelUp ? e("div",{className:"levelup"}, detail.levelUp===3 ? `親密度 ♡♡♡！${nameOf(f.id)}決定住下來了 🏡` : `親密度升到 ${"♡".repeat(detail.levelUp)}，解鎖新故事`) : null,
+          e("img",{className:"catpic", src:catSrc(f.id), alt:`${nameOf(f.id)}，${f.behavior}`}),
+          e("div",{className:"catname"}, nameOf(f.id), " ", (naming===String(f.id) || lv===0) ? null : e("button",{className:"namebtn", onClick:()=>{ setNaming(String(f.id)); setNameDraft(st.names[String(f.id)]||""); }}, st.names[String(f.id)] ? "改名" : "取名字")),
+          naming===String(f.id) ? e("div",{className:"namerow"},
+            e("input",{value:nameDraft, maxLength:RULES.nameMax, placeholder:`幫${CAT_COATS[f.id]}取個名字`, autoFocus:true, onChange:ev=>setNameDraft(ev.target.value), onKeyDown:ev=>{ if (ev.key==="Enter") saveName(f.id); }}),
+            e("button",{onClick:()=>saveName(f.id)}, "好")) : null,
+          e("div",{className:"hearts"}, hearts(lv)),
+          e("div",{className:"lvnote"}, lv===0 ? "還不是朋友" : lv===3 ? "住在你的院子裡" : `再來玩 ${toNext(st,f.id)} 次升級`),
           FactBlock(f),
+          f.stories ? e("div",{className:"stories"},
+            e("div",{className:"truth-label"}, "牠的故事"),
+            f.stories.map((t,i)=> e("div",{key:i, className:"story"+(lv>i?"":" locked"), "data-lv":"♡".repeat(i+1)},
+              lv>i ? t : lv===0 ? "在院子猜對牠的貓語，就能解鎖" : `再來玩 ${(i===1?RULES.lv2:RULES.lv3) - (st.aff[String(f.id)]||0)} 次解鎖`))) : null,
           e("div",{className:"actions"},
             e("button",{className:"secondary", onClick:()=>toggleFav(f.id)}, Icon(isFav?"heartFill":"heart"), isFav?"已收藏":"收藏"),
             e("button",{className:"secondary", onClick:()=>shareCard(f.id), disabled:busy}, Icon("image"), busy?"產生中…":"存成圖卡"),
-            e("button",{onClick:()=>setDetail(null)}, "關閉"))));
+            e("button",{onClick:closeDetail}, "關閉"))));
     }
 
+    let popModal = null;
+    if (popups.length && !quiz && !detail){
+      const pp = popups[0]; const next = ()=>setPopups(popups.slice(1));
+      if (pp.type==="special"){
+        const f = factOf(pp.id);
+        popModal = e("div",{className:"modal-bg", onClick:next}, e("div",{className:"modal", onClick:ev=>ev.stopPropagation()},
+          e("div",{className:"verdict", style:{color:"#8a6a50"}}, `連續來訪 ${pp.days} 天！`),
+          e("img",{className:"catpic", src:catSrc(pp.id), alt:CAT_COATS[pp.id]}),
+          e("div",{className:"catname"}, `${CAT_COATS[pp.id]}來找你了`),
+          e("div",{className:"bubble"}, f.catSays),
+          e("div",{className:"levelup"}, "牠直接成為你的朋友 ♡", e("br"), f.stories[0]),
+          e("div",{className:"actions"},
+            e("button",{className:"adopt", onClick:()=>{ next(); setDetail({id:pp.id}); setNaming(pp.id); setNameDraft(""); }}, "幫牠取名字"),
+            e("button",{onClick:next}, "好"))));
+      } else {
+        popModal = e("div",{className:"modal-bg", onClick:next}, e("div",{className:"modal", onClick:ev=>ev.stopPropagation()},
+          e("div",{className:"q", style:{marginTop:0, marginBottom:10}}, "你不在的時候"),
+          e("img",{className:"scene", src:`./scenes/${pp.img}.webp`, alt:"院子裡發生的事"}),
+          e("div",{className:"away-text"}, pp.text),
+          pp.gift ? e("div",{className:"levelup"}, "還有貓留了回禮給你，去院子看看 🎁") : null,
+          e("div",{className:"actions"}, e("button",{onClick:next}, "回院子"))));
+      }
+    }
     return e("div",null, header,
       e("div",{className:"wrap"}, tabs, body,
         e("div",{className:"sync"}, sync, isAnon ? "　·　目前未綁定帳號，換手機前請先用 Google 保存" : "")),
-      quizModal, detailModal,
+      quizModal, detailModal, popModal,
       e("div",{className:"toast"+(toast?" show":"")}, toast));
   }
 
